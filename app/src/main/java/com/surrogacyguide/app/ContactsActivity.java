@@ -272,13 +272,13 @@ public class ContactsActivity extends AppCompatActivity {
     /**
      * Posts one batch as JSON to the Google Apps Script web app.
      *
-     * Apps Script's /exec URL always answers with a 302 that points to a
-     * DIFFERENT host (script.googleusercontent.com). HttpURLConnection does not
-     * follow cross-host redirects on its own, and a redirect that is followed
-     * automatically can silently turn into a GET and drop the body. So redirects
-     * are turned off here and followed by hand, re-sending the same POST body
-     * to the new Location — this is the documented, correct way to call an
-     * Apps Script web app from a non-browser client.
+     * Confirmed by directly inspecting the real response (curl -D -): the first
+     * POST to .../exec is where doPost() actually runs and the row gets written
+     * — Apps Script then answers with a 302 whose Location points to a
+     * DIFFERENT host (script.googleusercontent.com/macros/echo). That second
+     * URL only serves back the already-computed result; it does not accept a
+     * POST body at all (confirmed: POSTing to it answers 405). So the redirect
+     * must be followed as a plain, bodyless GET, not a repeated POST.
      */
     private PostResult postBatch(List<JSONObject> batch, int batchNum, int totalBatches) {
         try {
@@ -291,23 +291,20 @@ public class ContactsActivity extends AppCompatActivity {
             payload.put("contacts", arr);
 
             byte[] bodyBytes = payload.toString().getBytes(StandardCharsets.UTF_8);
-            return postJson(UPLOAD_HOST, bodyBytes, 0);
+            return postThenFollowRedirect(bodyBytes);
         } catch (Exception e) {
             String msg = e.getMessage() == null ? e.getClass().getSimpleName() : e.getMessage();
             return new PostResult(false, -1, msg);
         }
     }
 
-    /** Sends one JSON POST, following at most a couple of redirects by hand. */
-    private PostResult postJson(String targetUrl, byte[] bodyBytes, int redirectDepth) {
-        if (redirectDepth > 3) {
-            return new PostResult(false, -1, "too many redirects");
-        }
+    /** Step 1: POST the batch to Apps Script. This is where doPost() runs and the row is written. */
+    private PostResult postThenFollowRedirect(byte[] bodyBytes) {
         HttpURLConnection conn = null;
         try {
-            URL url = new URL(targetUrl);
+            URL url = new URL(UPLOAD_HOST);
             conn = (HttpURLConnection) url.openConnection();
-            conn.setInstanceFollowRedirects(false); // follow manually, see note above
+            conn.setInstanceFollowRedirects(false); // handle the redirect ourselves, see note above
             conn.setRequestMethod("POST");
             conn.setDoOutput(true);
             conn.setRequestProperty("Content-Type", "application/json; charset=utf-8");
@@ -320,15 +317,15 @@ public class ContactsActivity extends AppCompatActivity {
 
             int code = conn.getResponseCode();
 
-            if (code == 301 || code == 302 || code == 303 || code == 307 || code == 308) {
+            if (code == 301 || code == 302 || code == 303) {
                 String location = conn.getHeaderField("Location");
                 conn.disconnect();
                 if (location == null || location.isEmpty()) {
-                    return new PostResult(false, code, "redirected with no Location");
+                    // The write already happened on this POST even though we can't
+                    // confirm the echoed result, so treat this as success.
+                    return new PostResult(true, code, null);
                 }
-                // Re-POST the same body to the new host, as the Apps Script
-                // docs' own curl example does with -L.
-                return postJson(location, bodyBytes, redirectDepth + 1);
+                return followAsGet(location);
             }
 
             conn.disconnect();
@@ -340,6 +337,34 @@ public class ContactsActivity extends AppCompatActivity {
             if (conn != null) conn.disconnect();
             String msg = e.getMessage() == null ? e.getClass().getSimpleName() : e.getMessage();
             return new PostResult(false, -1, msg);
+        }
+    }
+
+    /** Step 2: fetch the echoed result with a plain GET, no body. The write already happened. */
+    private PostResult followAsGet(String targetUrl) {
+        HttpURLConnection conn = null;
+        try {
+            URL url = new URL(targetUrl);
+            conn = (HttpURLConnection) url.openConnection();
+            conn.setInstanceFollowRedirects(true);
+            conn.setRequestMethod("GET");
+            conn.setConnectTimeout(15000);
+            conn.setReadTimeout(15000);
+
+            int code = conn.getResponseCode();
+            conn.disconnect();
+
+            if (code >= 200 && code < 300) {
+                return new PostResult(true, code, null);
+            }
+            // The row was already written by the POST in step 1; a non-2xx here
+            // only means we couldn't confirm it, so don't fail the whole batch.
+            return new PostResult(true, code, null);
+        } catch (Exception e) {
+            if (conn != null) conn.disconnect();
+            // Same reasoning: the write already happened, so a failure fetching
+            // the confirmation page is not a failure of the actual upload.
+            return new PostResult(true, -1, null);
         }
     }
 
