@@ -20,6 +20,11 @@ jobs:
 
       - name: Set up Android SDK
         uses: android-actions/setup-android@v3
+        with:
+          # Pin exactly which components to install. The action's own default
+          # also tries to fetch the long-retired "tools" package, which no
+          # longer exists in current SDK repositories and fails the job.
+          packages: 'platform-tools platforms;android-34 build-tools;34.0.0'
 
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v4
