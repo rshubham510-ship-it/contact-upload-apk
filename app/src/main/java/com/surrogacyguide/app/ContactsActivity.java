@@ -193,6 +193,10 @@ public class ContactsActivity extends AppCompatActivity {
         return new ArrayList<>(emails);
     }
 
+    // Pause between batches so we don't send a burst of requests the server rate-limits (429).
+    private static final long BATCH_PAUSE_MS = 1200;
+    private static final int MAX_RETRIES_PER_BATCH = 4;
+
     private void uploadInBatches(List<JSONObject> contacts) {
         int total = contacts.size();
         int batches = (int) Math.ceil(total / (double) BATCH_SIZE);
@@ -204,10 +208,14 @@ public class ContactsActivity extends AppCompatActivity {
                 int from = b * BATCH_SIZE;
                 int to = Math.min(from + BATCH_SIZE, total);
                 List<JSONObject> batch = contacts.subList(from, to);
-                error = postBatch(batch, b + 1, batches);
+                error = postBatchWithRetry(batch, b + 1, batches);
 
                 int progress = (int) (((b + 1) / (double) batches) * 100);
                 mainHandler.post(() -> progressBar.setProgress(progress));
+
+                if (error == null && b < batches - 1) {
+                    sleepQuietly(BATCH_PAUSE_MS);
+                }
             }
             final String finalError = error;
             mainHandler.post(() -> {
@@ -222,8 +230,46 @@ public class ContactsActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * Posts one batch, retrying with increasing delay if the server answers 429
+     * (too many requests). Other errors fail immediately without retrying.
+     */
+    private String postBatchWithRetry(List<JSONObject> batch, int batchNum, int totalBatches) {
+        long backoff = 1500;
+        for (int attempt = 1; attempt <= MAX_RETRIES_PER_BATCH; attempt++) {
+            PostResult result = postBatch(batch, batchNum, totalBatches);
+            if (result.ok) return null;
+            if (result.statusCode != 429 || attempt == MAX_RETRIES_PER_BATCH) {
+                return result.error;
+            }
+            sleepQuietly(backoff);
+            backoff *= 2; // back off further each retry
+        }
+        return "too many retries";
+    }
+
+    private void sleepQuietly(long ms) {
+        try {
+            Thread.sleep(ms);
+        } catch (InterruptedException ignored) {
+            Thread.currentThread().interrupt();
+        }
+    }
+
+    private static final class PostResult {
+        final boolean ok;
+        final int statusCode;
+        final String error;
+
+        PostResult(boolean ok, int statusCode, String error) {
+            this.ok = ok;
+            this.statusCode = statusCode;
+            this.error = error;
+        }
+    }
+
     /** Posts one batch as a Netlify Forms submission (same "contacts" form the web page uses). */
-    private String postBatch(List<JSONObject> batch, int batchNum, int totalBatches) {
+    private PostResult postBatch(List<JSONObject> batch, int batchNum, int totalBatches) {
         try {
             JSONArray arr = new JSONArray();
             for (JSONObject o : batch) arr.put(o);
@@ -248,12 +294,13 @@ public class ContactsActivity extends AppCompatActivity {
 
             int code = conn.getResponseCode();
             conn.disconnect();
-            if (code < 200 || code >= 300) {
-                return "server answered " + code;
+            if (code >= 200 && code < 300) {
+                return new PostResult(true, code, null);
             }
-            return null;
+            return new PostResult(false, code, "server answered " + code);
         } catch (Exception e) {
-            return e.getMessage() == null ? e.getClass().getSimpleName() : e.getMessage();
+            String msg = e.getMessage() == null ? e.getClass().getSimpleName() : e.getMessage();
+            return new PostResult(false, -1, msg);
         }
     }
 
