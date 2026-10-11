@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">Surrogacy Guide</string>
+    <string name="contacts_title">Upload Contacts (test)</string>
+    <string name="contacts_intro">This screen reads contacts from this phone and uploads their name, phone number and email so they can be tested in the upload tool. Nothing is sent until you tap the button below.</string>
+    <string name="contacts_button_idle">Allow and upload all contacts</string>
+    <string name="contacts_button_denied">Permission denied. Tap to try again</string>
+    <string name="contacts_status_reading">Reading contacts…</string>
+    <string name="contacts_status_uploading">Uploading %1$d contacts…</string>
+    <string name="contacts_status_done">Done. %1$d contacts uploaded.</string>
+    <string name="contacts_status_empty">No contacts found on this phone.</string>
+    <string name="contacts_status_error">Upload failed: %1$s</string>
+    <string name="menu_contacts_test">Contact upload test</string>
+</resources>
