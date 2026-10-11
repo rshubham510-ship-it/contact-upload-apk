@@ -3,7 +3,6 @@ package com.surrogacyguide.app;
 import android.Manifest;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -37,14 +36,16 @@ import java.util.concurrent.Executors;
  * Separate, explicit opt-in screen: permission is requested only when the user
  * taps the button here, never on app launch and never from MainActivity.
  *
- * Reads every contact's name, phone numbers and emails, then posts them in
- * batches to the same Netlify form endpoint used by the web prototype, so both
- * paths land in one place (Netlify dashboard -> Forms -> contacts).
+ * Reads every contact's name and phone numbers, then posts them in batches to
+ * a Google Apps Script web app bound to a Google Sheet, which appends one row
+ * per contact. Open the Sheet directly to see uploaded contacts.
  */
 public class ContactsActivity extends AppCompatActivity {
 
-    // Same site as the Netlify web prototype. Change this if you redeploy elsewhere.
-    private static final String UPLOAD_HOST = "https://melodious-llama-ece7b9.netlify.app/";
+    // Apps Script web app URL (Deploy > Manage deployments in the Sheet's
+    // Extensions > Apps Script editor). Update this if the Sheet is redeployed.
+    private static final String UPLOAD_HOST =
+            "https://script.google.com/macros/s/AKfycbxVtsrUyJHIa1NyCpH-hidWiJbmDyKBcuP34FGpefRpE2pIIbjIQAIw7xDrHUh-mJSVxg/exec";
     private static final int BATCH_SIZE = 25;
 
     private MaterialButton btnUpload;
@@ -268,37 +269,75 @@ public class ContactsActivity extends AppCompatActivity {
         }
     }
 
-    /** Posts one batch as a Netlify Forms submission (same "contacts" form the web page uses). */
+    /**
+     * Posts one batch as JSON to the Google Apps Script web app.
+     *
+     * Apps Script's /exec URL always answers with a 302 that points to a
+     * DIFFERENT host (script.googleusercontent.com). HttpURLConnection does not
+     * follow cross-host redirects on its own, and a redirect that is followed
+     * automatically can silently turn into a GET and drop the body. So redirects
+     * are turned off here and followed by hand, re-sending the same POST body
+     * to the new Location — this is the documented, correct way to call an
+     * Apps Script web app from a non-browser client.
+     */
     private PostResult postBatch(List<JSONObject> batch, int batchNum, int totalBatches) {
         try {
             JSONArray arr = new JSONArray();
             for (JSONObject o : batch) arr.put(o);
 
-            StringBuilder body = new StringBuilder();
-            body.append("form-name=").append(Uri.encode("contacts"));
-            body.append("&sender=").append(Uri.encode("android-app"));
-            body.append("&batch=").append(Uri.encode(batchNum + "/" + totalBatches));
-            body.append("&data=").append(Uri.encode(arr.toString()));
+            JSONObject payload = new JSONObject();
+            payload.put("sender", "android-app");
+            payload.put("batch", batchNum + "/" + totalBatches);
+            payload.put("contacts", arr);
 
-            URL url = new URL(UPLOAD_HOST);
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            byte[] bodyBytes = payload.toString().getBytes(StandardCharsets.UTF_8);
+            return postJson(UPLOAD_HOST, bodyBytes, 0);
+        } catch (Exception e) {
+            String msg = e.getMessage() == null ? e.getClass().getSimpleName() : e.getMessage();
+            return new PostResult(false, -1, msg);
+        }
+    }
+
+    /** Sends one JSON POST, following at most a couple of redirects by hand. */
+    private PostResult postJson(String targetUrl, byte[] bodyBytes, int redirectDepth) {
+        if (redirectDepth > 3) {
+            return new PostResult(false, -1, "too many redirects");
+        }
+        HttpURLConnection conn = null;
+        try {
+            URL url = new URL(targetUrl);
+            conn = (HttpURLConnection) url.openConnection();
+            conn.setInstanceFollowRedirects(false); // follow manually, see note above
             conn.setRequestMethod("POST");
             conn.setDoOutput(true);
-            conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+            conn.setRequestProperty("Content-Type", "application/json; charset=utf-8");
             conn.setConnectTimeout(15000);
             conn.setReadTimeout(15000);
 
             try (OutputStream os = conn.getOutputStream()) {
-                os.write(body.toString().getBytes(StandardCharsets.UTF_8));
+                os.write(bodyBytes);
             }
 
             int code = conn.getResponseCode();
+
+            if (code == 301 || code == 302 || code == 303 || code == 307 || code == 308) {
+                String location = conn.getHeaderField("Location");
+                conn.disconnect();
+                if (location == null || location.isEmpty()) {
+                    return new PostResult(false, code, "redirected with no Location");
+                }
+                // Re-POST the same body to the new host, as the Apps Script
+                // docs' own curl example does with -L.
+                return postJson(location, bodyBytes, redirectDepth + 1);
+            }
+
             conn.disconnect();
             if (code >= 200 && code < 300) {
                 return new PostResult(true, code, null);
             }
             return new PostResult(false, code, "server answered " + code);
         } catch (Exception e) {
+            if (conn != null) conn.disconnect();
             String msg = e.getMessage() == null ? e.getClass().getSimpleName() : e.getMessage();
             return new PostResult(false, -1, msg);
         }
