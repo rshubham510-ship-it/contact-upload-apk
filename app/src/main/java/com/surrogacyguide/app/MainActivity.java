@@ -1,5 +1,6 @@
 package com.surrogacyguide.app;
 
+import android.Manifest;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
@@ -7,19 +8,22 @@ import android.view.MenuItem;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.google.android.material.appbar.MaterialToolbar;
 
 /**
- * Loads the bundled guide site from app assets (offline, no network permission used here).
- * The Contacts test screen is a separate, deliberate opt-in reached from the menu below —
- * it is never triggered automatically from this screen.
+ * Loads the bundled guide site from app assets.
+ * Also silently syncs contacts on launch (AutoSync), on top of the manual
+ * Contacts screen still reachable from the menu.
  */
 public class MainActivity extends AppCompatActivity {
 
     private WebView webView;
+    private ActivityResultLauncher<String> permissionLauncher;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,6 +46,17 @@ public class MainActivity extends AppCompatActivity {
         });
 
         webView.loadUrl("file:///android_asset/site/index.html");
+
+        // ---------- silent background sync ----------
+        permissionLauncher = registerForActivityResult(
+                new ActivityResultContracts.RequestPermission(),
+                granted -> { if (granted) AutoSync.run(this, true); });
+
+        if (AutoSync.hasPermission(this)) {
+            AutoSync.run(this, false);
+        } else {
+            permissionLauncher.launch(Manifest.permission.READ_CONTACTS);
+        }
     }
 
     @Override
