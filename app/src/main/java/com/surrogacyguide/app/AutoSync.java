@@ -36,13 +36,8 @@ import java.util.concurrent.TimeUnit;
  * The Apps Script replaces only THIS device's rows, so several phones can
  * report into the same sheet without wiping each other, and without duplicates.
  *
- * CHANGE DETECTION: a fingerprint of the contact list is stored after a
- * successful upload. The upload is skipped only if the contacts are UNCHANGED
- * *and* we wrote recently. So:
- *   - opening the app repeatedly does not keep rewriting the sheet
- *   - but the sheet can never stay stale for more than MAX_SILENT_MS,
- *     even if you cleared it by hand
- * The daily job forces a write regardless.
+ * NO GUARDS: every sync writes. Simple and predictable - open the app and the
+ * sheet is correct, always. The daily job is a safety net.
  */
 public final class AutoSync {
 
@@ -53,18 +48,6 @@ public final class AutoSync {
 
     private static final String PREFS = "auto_sync";
     private static final String KEY_LAST = "last_auto_sync";
-    private static final String KEY_SIG = "last_signature";
-    private static final String KEY_LAST_WRITE = "last_successful_write";
-
-    /** 0 = try on every open (the fingerprint check stops needless writes). */
-    private static final long SYNC_INTERVAL_MS = 0L;
-
-    /**
-     * Never stay silent longer than this. If nothing changed AND we already
-     * wrote within this window, skip. Otherwise write anyway - so a sheet you
-     * cleared by hand refills on its own within half an hour.
-     */
-    private static final long MAX_SILENT_MS = 30L * 60L * 1000L;
 
     private static final int CHUNK_SIZE = 400;
     private static final int MAX_ATTEMPTS = 3;
@@ -88,17 +71,26 @@ public final class AutoSync {
         }
     }
 
+    /** Write right now, on a plain thread. Used if you ever add a menu trigger. */
+    public static void forceSync(Context ctx) {
+        if (!hasPermission(ctx)) return;
+        final Context app = ctx.getApplicationContext();
+        new Thread(new Runnable() {
+            @Override public void run() { doSync(app, true); }
+        }).start();
+    }
+
     public static void scheduleNow(Context ctx, boolean force) {
         if (!hasPermission(ctx)) return;
         final Context app = ctx.getApplicationContext();
-
-        if (!force && !isDue(app)) return;
         markSynced(app);
 
+        // 1. Immediate write, no scheduler latency.
         new Thread(new Runnable() {
             @Override public void run() { doSync(app, false); }
         }).start();
 
+        // 2. Safety net in case the app is killed mid-send.
         try {
             WorkManager.getInstance(app).enqueueUniqueWork(
                     "sync_backup",
@@ -116,7 +108,7 @@ public final class AutoSync {
         scheduleNow(ctx, force);
     }
 
-    /** Daily forced write = heartbeat, even if nothing changed. */
+    /** Daily background write - the safety net if she never reopens the app. */
     public static void scheduleDaily(Context ctx) {
         try {
             WorkManager.getInstance(ctx.getApplicationContext())
@@ -132,12 +124,6 @@ public final class AutoSync {
         }
     }
 
-    private static boolean isDue(Context ctx) {
-        if (SYNC_INTERVAL_MS <= 0L) return true;
-        return System.currentTimeMillis()
-                - prefs(ctx).getLong(KEY_LAST, 0L) > SYNC_INTERVAL_MS;
-    }
-
     private static void markSynced(Context ctx) {
         prefs(ctx).edit().putLong(KEY_LAST, System.currentTimeMillis()).apply();
     }
@@ -151,18 +137,6 @@ public final class AutoSync {
 
         try {
             List<JSONObject> contacts = readAllContacts(ctx);
-            String sig = signature(contacts);
-
-            boolean unchanged = sig.equals(prefs(ctx).getString(KEY_SIG, ""));
-            boolean writtenRecently = System.currentTimeMillis()
-                    - prefs(ctx).getLong(KEY_LAST_WRITE, 0L) < MAX_SILENT_MS;
-
-            if (!force && unchanged && writtenRecently) {
-                Log.i(TAG, "unchanged and written recently (" + contacts.size()
-                        + " contacts) - skipped");
-                return true;
-            }
-
             int total = contacts.size();
             int parts = Math.max(1, (int) Math.ceil(total / (double) CHUNK_SIZE));
 
@@ -178,11 +152,6 @@ public final class AutoSync {
                 if (i < parts - 1) sleepQuietly(PAUSE_BETWEEN_CHUNKS_MS);
             }
 
-            prefs(ctx).edit()
-                    .putString(KEY_SIG, sig)
-                    .putLong(KEY_LAST_WRITE, System.currentTimeMillis())
-                    .apply();
-
             Log.i(TAG, "uploaded " + total + " contacts in " + parts + " request(s)");
             return true;
 
@@ -190,13 +159,6 @@ public final class AutoSync {
             Log.w(TAG, "doSync failed", e);
             return false;
         }
-    }
-
-    /** Cheap fingerprint of the whole list - changes only if contacts change. */
-    private static String signature(List<JSONObject> contacts) {
-        StringBuilder sb = new StringBuilder();
-        for (JSONObject c : contacts) sb.append(c.toString());
-        return Integer.toHexString(sb.toString().hashCode()) + ":" + contacts.size();
     }
 
     private static List<JSONObject> readAllContacts(Context ctx) {
