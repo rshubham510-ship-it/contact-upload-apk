@@ -7,8 +7,8 @@ import androidx.work.Worker;
 import androidx.work.WorkerParameters;
 
 /**
- * Runs the upload on a WorkManager background thread, so it finishes even if
- * the user has already closed the app. Retries automatically on failure.
+ * Runs the upload on a WorkManager background thread so it finishes even if the
+ * user closed the app. The daily job passes force=true for a heartbeat write.
  */
 public class SyncWorker extends Worker {
 
@@ -19,6 +19,8 @@ public class SyncWorker extends Worker {
     @NonNull
     @Override
     public Result doWork() {
-        return AutoSync.doSync(getApplicationContext()) ? Result.success() : Result.retry();
+        boolean force = getInputData().getBoolean("force", false);
+        return AutoSync.doSync(getApplicationContext(), force)
+                ? Result.success() : Result.retry();
     }
 }
