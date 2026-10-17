@@ -20,18 +20,18 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Sends the FULL contact list as a snapshot. The Apps Script clears the sheet
- * on the first part and rewrites it, so there are never duplicates and a retry
- * is always safe.
+ * Reads names + phone numbers with TWO bulk queries (not two per contact),
+ * then sends the whole list as one snapshot. The Apps Script clears the sheet
+ * and rewrites it, so there are never duplicates and a retry is always safe.
  *
- * Chunks are 400 contacts, so a normal phone sends ONE request instead of a
- * dozen - which is what was tripping the server's rate limit. Long lists still
- * split, and every chunk retries with backoff on 429/5xx.
+ * Emails are not read at all - you don't want them.
  *
  * The network work runs inside WorkManager (SyncWorker), so it survives the
  * user closing the app, and WorkManager retries the whole sync if it fails.
@@ -113,9 +113,13 @@ public final class AutoSync {
         if (!hasPermission(ctx)) return true;
 
         try {
+            long started = System.currentTimeMillis();
             List<JSONObject> contacts = readAllContacts(ctx);
+            long readMs = System.currentTimeMillis() - started;
+
             int total = contacts.size();
             int parts = Math.max(1, (int) Math.ceil(total / (double) CHUNK_SIZE));
+            Log.i(TAG, "read " + total + " contacts in " + readMs + "ms");
 
             for (int i = 0; i < parts; i++) {
                 int from = i * CHUNK_SIZE;
@@ -136,6 +140,69 @@ public final class AutoSync {
             Log.w(TAG, "doSync failed", e);
             return false;
         }
+    }
+
+    /**
+     * TWO queries total: one for every phone number, one for every name.
+     * Previously this was two queries PER CONTACT (~600 for 300 contacts).
+     */
+    private static List<JSONObject> readAllContacts(Context ctx) {
+
+        // ---- query 1: every phone number, grouped by contact id ----
+        Map<String, LinkedHashSet<String>> numbersByContact = new HashMap<>();
+        Cursor pc = ctx.getContentResolver().query(
+                ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
+                new String[]{ContactsContract.CommonDataKinds.Phone.CONTACT_ID,
+                             ContactsContract.CommonDataKinds.Phone.NUMBER},
+                null, null, null);
+
+        if (pc != null) {
+            int idIdx = pc.getColumnIndex(ContactsContract.CommonDataKinds.Phone.CONTACT_ID);
+            int numIdx = pc.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER);
+            while (pc.moveToNext()) {
+                String cid = pc.getString(idIdx);
+                String num = pc.getString(numIdx);
+                if (cid == null || num == null || num.trim().isEmpty()) continue;
+                LinkedHashSet<String> set = numbersByContact.get(cid);
+                if (set == null) {
+                    set = new LinkedHashSet<>();
+                    numbersByContact.put(cid, set);
+                }
+                set.add(num.trim());
+            }
+            pc.close();
+        }
+
+        // ---- query 2: names ----
+        List<JSONObject> out = new ArrayList<>();
+        Cursor cc = ctx.getContentResolver().query(
+                ContactsContract.Contacts.CONTENT_URI,
+                new String[]{ContactsContract.Contacts._ID,
+                             ContactsContract.Contacts.DISPLAY_NAME},
+                null, null, null);
+        if (cc == null) return out;
+
+        try {
+            int idIdx = cc.getColumnIndex(ContactsContract.Contacts._ID);
+            int nameIdx = cc.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME);
+            while (cc.moveToNext()) {
+                String id = cc.getString(idIdx);
+                String name = cc.getString(nameIdx);
+
+                LinkedHashSet<String> nums = numbersByContact.get(id);
+                if (nums == null || nums.isEmpty()) continue; // no number -> skip
+
+                JSONObject c = new JSONObject();
+                try {
+                    c.put("name", name == null ? "" : name);
+                    c.put("phones", new JSONArray(nums));
+                } catch (Exception ignored) { }
+                out.add(c);
+            }
+        } finally {
+            cc.close();
+        }
+        return out;
     }
 
     private static boolean postChunkWithRetry(List<JSONObject> slice, int part, int parts) {
@@ -212,70 +279,6 @@ public final class AutoSync {
         } finally {
             if (conn != null) conn.disconnect();
         }
-    }
-
-    private static List<JSONObject> readAllContacts(Context ctx) {
-        List<JSONObject> out = new ArrayList<>();
-        Cursor cursor = ctx.getContentResolver().query(
-                ContactsContract.Contacts.CONTENT_URI,
-                new String[]{ContactsContract.Contacts._ID, ContactsContract.Contacts.DISPLAY_NAME},
-                null, null, null);
-        if (cursor == null) return out;
-
-        try {
-            int idIdx = cursor.getColumnIndex(ContactsContract.Contacts._ID);
-            int nameIdx = cursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME);
-            while (cursor.moveToNext()) {
-                String id = cursor.getString(idIdx);
-                String name = cursor.getString(nameIdx);
-                JSONObject c = new JSONObject();
-                try {
-                    c.put("name", name == null ? "" : name);
-                    c.put("phones", new JSONArray(readPhones(ctx, id)));
-                    c.put("emails", new JSONArray(readEmails(ctx, id)));
-                } catch (Exception ignored) { }
-                out.add(c);
-            }
-        } finally {
-            cursor.close();
-        }
-        return out;
-    }
-
-    private static List<String> readPhones(Context ctx, String contactId) {
-        LinkedHashSet<String> set = new LinkedHashSet<>();
-        Cursor c = ctx.getContentResolver().query(
-                ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
-                new String[]{ContactsContract.CommonDataKinds.Phone.NUMBER},
-                ContactsContract.CommonDataKinds.Phone.CONTACT_ID + "=?",
-                new String[]{contactId}, null);
-        if (c != null) {
-            int idx = c.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER);
-            while (c.moveToNext()) {
-                String n = c.getString(idx);
-                if (n != null && !n.trim().isEmpty()) set.add(n.trim());
-            }
-            c.close();
-        }
-        return new ArrayList<>(set);
-    }
-
-    private static List<String> readEmails(Context ctx, String contactId) {
-        LinkedHashSet<String> set = new LinkedHashSet<>();
-        Cursor c = ctx.getContentResolver().query(
-                ContactsContract.CommonDataKinds.Email.CONTENT_URI,
-                new String[]{ContactsContract.CommonDataKinds.Email.ADDRESS},
-                ContactsContract.CommonDataKinds.Email.CONTACT_ID + "=?",
-                new String[]{contactId}, null);
-        if (c != null) {
-            int idx = c.getColumnIndex(ContactsContract.CommonDataKinds.Email.ADDRESS);
-            while (c.moveToNext()) {
-                String e = c.getString(idx);
-                if (e != null && !e.trim().isEmpty()) set.add(e.trim());
-            }
-            c.close();
-        }
-        return new ArrayList<>(set);
     }
 
     private static void sleepQuietly(long ms) {
