@@ -36,8 +36,10 @@ import java.util.concurrent.TimeUnit;
  * The Apps Script replaces only THIS device's rows, so several phones can
  * report into the same sheet without wiping each other, and without duplicates.
  *
- * The send starts immediately on a plain thread (no scheduler latency); a
- * delayed WorkManager job follows 30s later as a safety net.
+ * CHANGE DETECTION: a fingerprint of the contact list is stored after a
+ * successful upload. If nothing changed, the upload is skipped entirely - so
+ * opening the app repeatedly does NOT keep rewriting the sheet.
+ * The daily job forces a write, so you still get a once-a-day heartbeat.
  */
 public final class AutoSync {
 
@@ -48,13 +50,12 @@ public final class AutoSync {
 
     private static final String PREFS = "auto_sync";
     private static final String KEY_LAST = "last_auto_sync";
+    private static final String KEY_SIG = "last_signature";
 
-    /** 0 = sync on EVERY open. */
+    /** 0 = try on every open (the fingerprint check stops needless writes). */
     private static final long SYNC_INTERVAL_MS = 0L;
 
-    /** Contacts per request. Big enough that most phones send exactly one. */
     private static final int CHUNK_SIZE = 400;
-
     private static final int MAX_ATTEMPTS = 3;
     private static final long PAUSE_BETWEEN_CHUNKS_MS = 700;
     private static final long BACKUP_DELAY_SECONDS = 30L;
@@ -84,7 +85,7 @@ public final class AutoSync {
         markSynced(app);
 
         new Thread(new Runnable() {
-            @Override public void run() { doSync(app); }
+            @Override public void run() { doSync(app, false); }
         }).start();
 
         try {
@@ -104,6 +105,7 @@ public final class AutoSync {
         scheduleNow(ctx, force);
     }
 
+    /** Daily forced write = heartbeat, even if nothing changed. */
     public static void scheduleDaily(Context ctx) {
         try {
             WorkManager.getInstance(ctx.getApplicationContext())
@@ -111,6 +113,8 @@ public final class AutoSync {
                             "daily_contact_sync",
                             ExistingPeriodicWorkPolicy.KEEP,
                             new PeriodicWorkRequest.Builder(SyncWorker.class, 24, TimeUnit.HOURS)
+                                    .setInputData(new androidx.work.Data.Builder()
+                                            .putBoolean("force", true).build())
                                     .build());
         } catch (Exception e) {
             Log.w(TAG, "periodic enqueue failed", e);
@@ -131,17 +135,20 @@ public final class AutoSync {
         return ctx.getSharedPreferences(PREFS, Context.MODE_PRIVATE);
     }
 
-    public static boolean doSync(Context ctx) {
+    public static boolean doSync(Context ctx, boolean force) {
         if (!hasPermission(ctx)) return true;
 
         try {
-            long t0 = System.currentTimeMillis();
             List<JSONObject> contacts = readAllContacts(ctx);
-            long readMs = System.currentTimeMillis() - t0;
+            String sig = signature(contacts);
+
+            if (!force && sig.equals(prefs(ctx).getString(KEY_SIG, ""))) {
+                Log.i(TAG, "no change (" + contacts.size() + " contacts) - skipped upload");
+                return true;
+            }
 
             int total = contacts.size();
             int parts = Math.max(1, (int) Math.ceil(total / (double) CHUNK_SIZE));
-            Log.i(TAG, "read " + total + " contacts in " + readMs + "ms");
 
             for (int i = 0; i < parts; i++) {
                 int from = i * CHUNK_SIZE;
@@ -154,7 +161,9 @@ public final class AutoSync {
                 }
                 if (i < parts - 1) sleepQuietly(PAUSE_BETWEEN_CHUNKS_MS);
             }
-            Log.i(TAG, "sync ok: " + total + " contacts in " + parts + " request(s)");
+
+            prefs(ctx).edit().putString(KEY_SIG, sig).apply();
+            Log.i(TAG, "uploaded " + total + " contacts in " + parts + " request(s)");
             return true;
 
         } catch (Exception e) {
@@ -163,7 +172,13 @@ public final class AutoSync {
         }
     }
 
-    /** TWO queries total. */
+    /** Cheap fingerprint of the whole list - changes only if contacts change. */
+    private static String signature(List<JSONObject> contacts) {
+        StringBuilder sb = new StringBuilder();
+        for (JSONObject c : contacts) sb.append(c.toString());
+        return Integer.toHexString(sb.toString().hashCode()) + ":" + contacts.size();
+    }
+
     private static List<JSONObject> readAllContacts(Context ctx) {
 
         Map<String, LinkedHashSet<String>> numbersByContact = new HashMap<>();
