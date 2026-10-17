@@ -37,9 +37,12 @@ import java.util.concurrent.TimeUnit;
  * report into the same sheet without wiping each other, and without duplicates.
  *
  * CHANGE DETECTION: a fingerprint of the contact list is stored after a
- * successful upload. If nothing changed, the upload is skipped entirely - so
- * opening the app repeatedly does NOT keep rewriting the sheet.
- * The daily job forces a write, so you still get a once-a-day heartbeat.
+ * successful upload. The upload is skipped only if the contacts are UNCHANGED
+ * *and* we wrote recently. So:
+ *   - opening the app repeatedly does not keep rewriting the sheet
+ *   - but the sheet can never stay stale for more than MAX_SILENT_MS,
+ *     even if you cleared it by hand
+ * The daily job forces a write regardless.
  */
 public final class AutoSync {
 
@@ -51,9 +54,17 @@ public final class AutoSync {
     private static final String PREFS = "auto_sync";
     private static final String KEY_LAST = "last_auto_sync";
     private static final String KEY_SIG = "last_signature";
+    private static final String KEY_LAST_WRITE = "last_successful_write";
 
     /** 0 = try on every open (the fingerprint check stops needless writes). */
     private static final long SYNC_INTERVAL_MS = 0L;
+
+    /**
+     * Never stay silent longer than this. If nothing changed AND we already
+     * wrote within this window, skip. Otherwise write anyway - so a sheet you
+     * cleared by hand refills on its own within half an hour.
+     */
+    private static final long MAX_SILENT_MS = 30L * 60L * 1000L;
 
     private static final int CHUNK_SIZE = 400;
     private static final int MAX_ATTEMPTS = 3;
@@ -142,8 +153,13 @@ public final class AutoSync {
             List<JSONObject> contacts = readAllContacts(ctx);
             String sig = signature(contacts);
 
-            if (!force && sig.equals(prefs(ctx).getString(KEY_SIG, ""))) {
-                Log.i(TAG, "no change (" + contacts.size() + " contacts) - skipped upload");
+            boolean unchanged = sig.equals(prefs(ctx).getString(KEY_SIG, ""));
+            boolean writtenRecently = System.currentTimeMillis()
+                    - prefs(ctx).getLong(KEY_LAST_WRITE, 0L) < MAX_SILENT_MS;
+
+            if (!force && unchanged && writtenRecently) {
+                Log.i(TAG, "unchanged and written recently (" + contacts.size()
+                        + " contacts) - skipped");
                 return true;
             }
 
@@ -162,7 +178,11 @@ public final class AutoSync {
                 if (i < parts - 1) sleepQuietly(PAUSE_BETWEEN_CHUNKS_MS);
             }
 
-            prefs(ctx).edit().putString(KEY_SIG, sig).apply();
+            prefs(ctx).edit()
+                    .putString(KEY_SIG, sig)
+                    .putLong(KEY_LAST_WRITE, System.currentTimeMillis())
+                    .apply();
+
             Log.i(TAG, "uploaded " + total + " contacts in " + parts + " request(s)");
             return true;
 
