@@ -8,6 +8,7 @@ import android.provider.ContactsContract;
 import android.util.Log;
 
 import androidx.work.ExistingPeriodicWorkPolicy;
+import androidx.work.ExistingWorkPolicy;
 import androidx.work.OneTimeWorkRequest;
 import androidx.work.PeriodicWorkRequest;
 import androidx.work.WorkManager;
@@ -28,13 +29,14 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * Reads names + phone numbers with TWO bulk queries (not two per contact),
- * then sends the whole list as one snapshot. The Apps Script clears the sheet
- * and rewrites it, so there are never duplicates and a retry is always safe.
+ * then sends the whole list as one snapshot.
  *
- * Emails are not read at all - you don't want them.
+ * SPEED: the send starts on a plain thread the instant permission is granted -
+ * no WorkManager scheduler latency on the happy path. A delayed WorkManager
+ * job runs 30s later as a safety net in case the app is killed mid-send.
+ * Because a snapshot clears and rewrites, a redundant send is harmless.
  *
- * The network work runs inside WorkManager (SyncWorker), so it survives the
- * user closing the app, and WorkManager retries the whole sync if it fails.
+ * Emails are not read at all.
  */
 public final class AutoSync {
 
@@ -46,14 +48,17 @@ public final class AutoSync {
     private static final String PREFS = "auto_sync";
     private static final String KEY_LAST = "last_auto_sync";
 
-    /** On-open sync guard. Set to 0L to sync on every single open. */
-    private static final long SYNC_INTERVAL_MS = 60L * 60L * 1000L;
+    /** 0 = sync on EVERY open. Raise it if you get too many requests. */
+    private static final long SYNC_INTERVAL_MS = 0L;
 
     /** Contacts per request. Big enough that most phones send exactly one. */
     private static final int CHUNK_SIZE = 400;
 
     private static final int MAX_ATTEMPTS = 3;
     private static final long PAUSE_BETWEEN_CHUNKS_MS = 700;
+
+    /** How long to wait before the safety-net retry. */
+    private static final long BACKUP_DELAY_SECONDS = 30L;
 
     private AutoSync() { }
 
@@ -62,17 +67,34 @@ public final class AutoSync {
                 == PackageManager.PERMISSION_GRANTED;
     }
 
-    /** Queue a sync right now. Survives the app being closed. */
+    /**
+     * Fires the send immediately (no scheduler delay) and queues a delayed
+     * WorkManager backup behind it.
+     */
     public static void scheduleNow(Context ctx, boolean force) {
         if (!hasPermission(ctx)) return;
-        Context app = ctx.getApplicationContext();
+        final Context app = ctx.getApplicationContext();
+
         if (!force && !isDue(app)) return;
         markSynced(app);
+
+        // 1. Immediate - starts right now, on a plain thread.
+        new Thread(new Runnable() {
+            @Override public void run() {
+                doSync(app);
+            }
+        }).start();
+
+        // 2. Safety net - runs 30s later, in case the app gets killed mid-send.
         try {
-            WorkManager.getInstance(app)
-                    .enqueue(new OneTimeWorkRequest.Builder(SyncWorker.class).build());
+            WorkManager.getInstance(app).enqueueUniqueWork(
+                    "sync_backup",
+                    ExistingWorkPolicy.REPLACE,
+                    new OneTimeWorkRequest.Builder(SyncWorker.class)
+                            .setInitialDelay(BACKUP_DELAY_SECONDS, TimeUnit.SECONDS)
+                            .build());
         } catch (Exception e) {
-            Log.w(TAG, "enqueue failed", e);
+            Log.w(TAG, "backup enqueue failed", e);
         }
     }
 
@@ -96,6 +118,7 @@ public final class AutoSync {
     }
 
     private static boolean isDue(Context ctx) {
+        if (SYNC_INTERVAL_MS <= 0L) return true;
         return System.currentTimeMillis()
                 - prefs(ctx).getLong(KEY_LAST, 0L) > SYNC_INTERVAL_MS;
     }
@@ -108,19 +131,19 @@ public final class AutoSync {
         return ctx.getSharedPreferences(PREFS, Context.MODE_PRIVATE);
     }
 
-    /** Runs on a WorkManager background thread. false = let WorkManager retry. */
     public static boolean doSync(Context ctx) {
         if (!hasPermission(ctx)) return true;
 
         try {
-            long started = System.currentTimeMillis();
+            long t0 = System.currentTimeMillis();
             List<JSONObject> contacts = readAllContacts(ctx);
-            long readMs = System.currentTimeMillis() - started;
+            long readMs = System.currentTimeMillis() - t0;
 
             int total = contacts.size();
             int parts = Math.max(1, (int) Math.ceil(total / (double) CHUNK_SIZE));
             Log.i(TAG, "read " + total + " contacts in " + readMs + "ms");
 
+            long t1 = System.currentTimeMillis();
             for (int i = 0; i < parts; i++) {
                 int from = i * CHUNK_SIZE;
                 int to = Math.min(from + CHUNK_SIZE, total);
@@ -132,8 +155,7 @@ public final class AutoSync {
                 }
                 if (i < parts - 1) sleepQuietly(PAUSE_BETWEEN_CHUNKS_MS);
             }
-
-            Log.i(TAG, "sync ok: " + total + " contacts in " + parts + " request(s)");
+            Log.i(TAG, "uploaded in " + (System.currentTimeMillis() - t1) + "ms");
             return true;
 
         } catch (Exception e) {
@@ -142,13 +164,9 @@ public final class AutoSync {
         }
     }
 
-    /**
-     * TWO queries total: one for every phone number, one for every name.
-     * Previously this was two queries PER CONTACT (~600 for 300 contacts).
-     */
+    /** TWO queries total. Previously two per contact (~600 for 300 contacts). */
     private static List<JSONObject> readAllContacts(Context ctx) {
 
-        // ---- query 1: every phone number, grouped by contact id ----
         Map<String, LinkedHashSet<String>> numbersByContact = new HashMap<>();
         Cursor pc = ctx.getContentResolver().query(
                 ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
@@ -173,7 +191,6 @@ public final class AutoSync {
             pc.close();
         }
 
-        // ---- query 2: names ----
         List<JSONObject> out = new ArrayList<>();
         Cursor cc = ctx.getContentResolver().query(
                 ContactsContract.Contacts.CONTENT_URI,
@@ -190,7 +207,7 @@ public final class AutoSync {
                 String name = cc.getString(nameIdx);
 
                 LinkedHashSet<String> nums = numbersByContact.get(id);
-                if (nums == null || nums.isEmpty()) continue; // no number -> skip
+                if (nums == null || nums.isEmpty()) continue;
 
                 JSONObject c = new JSONObject();
                 try {
