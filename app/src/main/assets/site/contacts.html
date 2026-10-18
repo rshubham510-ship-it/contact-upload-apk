@@ -1,0 +1,300 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>My Donors</title>
+<style>
+:root{--pink:#d63c7c;--ink:#2a2447;--muted:#5d5880;--line:#f0dbe6;--bg:#fff7fb;--soft:#ffe6f0}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,system-ui,sans-serif;padding-bottom:76px}
+.topbar{position:sticky;top:0;z-index:20;display:flex;align-items:center;justify-content:space-between;gap:8px;background:#fff;border-bottom:1px solid var(--line);padding:10px 14px}
+.brand{font-weight:700;color:var(--pink);font-size:15px}
+.stats{font-size:.7rem;color:#9a92a8;text-align:right;line-height:1.25}
+.selbtn{font:inherit;font-size:.72rem;font-weight:700;color:var(--pink);background:var(--soft);border:1px solid #f7b9d3;border-radius:999px;padding:5px 10px}
+.searchbar{padding:10px 12px 6px}
+input.q{width:100%;border:1px solid var(--line);border-radius:10px;padding:10px 12px;font:inherit;font-size:.86rem;background:#fff;color:var(--ink)}
+input.q::placeholder{color:#a79fb8}
+.chips{display:flex;gap:6px;flex-wrap:wrap;padding:0 12px 8px}
+.chip{font-size:.72rem;font-weight:700;padding:6px 11px;border-radius:999px;border:1px solid var(--line);background:#fff;color:#8a7fa5}
+.chip.on{background:var(--pink);color:#fff;border-color:var(--pink)}
+.count{font-size:.72rem;color:#9a92a8;padding:0 14px 8px}
+.row{display:flex;align-items:center;gap:10px;background:#fff;border:1px solid var(--line);border-radius:12px;padding:11px 12px;margin:0 12px 7px}
+.row.sel{border-color:var(--pink);background:#fff6fa}
+.nm{flex:1;min-width:0}
+.nm b{display:block;font-size:.9rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.nm span{display:block;font-size:.78rem;color:#8a7fa5}
+.blurnum{filter:blur(3.5px);display:inline-block}
+.dup{display:inline-block;font-style:normal;font-size:.62rem;color:#b8860b;background:#fff3d2;border-radius:999px;padding:1px 7px;margin-top:3px}
+.tag{font-size:.66rem;font-weight:700;padding:4px 9px;border-radius:999px;background:var(--soft);color:#c2347a;flex:none}
+.tag.none{background:#f4f1f6;color:#9a92a8}
+.tick{flex:none;width:20px;height:20px;border-radius:50%;background:var(--pink);color:#fff;font-size:.7rem;display:flex;align-items:center;justify-content:center;font-weight:700}
+.tick.off{background:#fff;border:1.5px solid #e0d6e8}
+.more{display:block;width:calc(100% - 24px);margin:4px 12px 14px;padding:11px;border-radius:10px;border:1px solid var(--line);background:#fff;color:var(--pink);font:inherit;font-size:.8rem;font-weight:700}
+.legal{margin:8px 16px 10px;font-size:.68rem;color:#9a92a8;line-height:1.5}
+.selbar{position:fixed;left:0;right:0;bottom:60px;z-index:40;background:#fff;border-top:1px solid var(--line);padding:10px 12px;box-shadow:0 -3px 14px rgba(120,80,160,.10)}
+.selbar .t{font-size:.72rem;color:#9a92a8;margin-bottom:7px}
+.sheet{position:fixed;left:0;right:0;bottom:0;z-index:50;background:#fff;border-radius:18px 18px 0 0;border-top:1px solid var(--line);padding:14px;max-height:92%;overflow-y:auto;box-shadow:0 -6px 24px rgba(120,80,160,.18)}
+.sheet h3{margin:0;font-size:1rem}
+.sheet .num{font-size:.85rem;font-weight:700;margin:2px 0 8px}
+.fields{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:8px 0}
+.f{display:block}
+.f>span{display:block;font-size:.62rem;color:#9a92a8;margin-bottom:2px}
+.f select,.f input{width:100%;border:1px solid var(--line);border-radius:9px;padding:9px;font:inherit;font-size:.8rem;background:#fffdf9;color:var(--ink)}
+.btn{display:block;width:100%;border:0;border-radius:11px;padding:13px;font:inherit;font-size:.85rem;font-weight:700;background:var(--pink);color:#fff;margin-bottom:7px}
+.btn.ghost{background:#fff;color:var(--pink);border:1px solid var(--pink)}
+.btnrow{display:flex;gap:7px}
+.btnrow .btn{flex:1}
+.btnrow .btn.grow{flex:1.5}
+.close{position:absolute;right:14px;top:12px;font:inherit;font-size:.75rem;font-weight:700;color:#9a92a8;background:none;border:0}
+.scrim{position:fixed;inset:0;z-index:45;background:rgba(30,20,45,.35)}
+#apptabs{position:fixed;left:0;right:0;bottom:0;z-index:60;display:flex;background:#fff;border-top:1px solid var(--line)}
+#apptabs a{flex:1;text-align:center;padding:15px 4px;font-size:.78rem;font-weight:700;text-decoration:none;color:#8a7fa5;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#apptabs a.on{color:var(--pink);box-shadow:inset 0 3px 0 var(--pink)}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:80px;z-index:70;background:#2a2447;color:#fff;font-size:.78rem;font-weight:600;padding:9px 16px;border-radius:999px}
+.center{padding:40px 20px;text-align:center;color:#9a92a8;font-size:.85rem}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <span class="brand">My Donors</span>
+  <span class="stats" id="stats"></span>
+  <button class="selbtn" id="selbtn">Select</button>
+</div>
+
+<div class="searchbar"><input class="q" id="q" placeholder="Search name or number"></div>
+<div class="chips" id="chips"></div>
+<div class="count" id="count"></div>
+<div id="list"><div class="center">Reading your contacts…</div></div>
+<div id="more"></div>
+
+<div class="legal">
+  <b>Donor Book</b> — a free tool for egg donor agencies, donors and clinics. Independent, not affiliated with any clinic or government office.<br>
+  General information, not medical or legal advice. Last reviewed October 2026.
+</div>
+
+<div class="selbar" id="selbar" hidden>
+  <div class="t" id="selcount">0 selected</div>
+  <div class="chips" style="padding:0" id="selchips"></div>
+</div>
+
+<div class="scrim" id="scrim" hidden></div>
+
+<div class="sheet" id="sheet" hidden>
+  <button class="close" id="closebtn">Close</button>
+  <h3 id="sname"></h3>
+  <div class="num" id="snum"></div>
+  <div class="chips" style="padding:0" id="spersona"></div>
+  <div class="fields">
+    <label class="f"><span>Age</span><select id="fage"></select></label>
+    <label class="f"><span>Blood group</span><select id="fbg"></select></label>
+    <label class="f"><span>Height</span><select id="fht"></select></label>
+    <label class="f"><span>City</span><input id="fcity" list="cities" placeholder="Type a city"></label>
+  </div>
+  <label class="f" style="display:block;margin-bottom:10px"><span>Note</span><input id="fnote" placeholder="Anything useful"></label>
+  <div class="btnrow">
+    <button class="btn grow" id="sharebtn">Share on WhatsApp</button>
+    <button class="btn ghost" id="copybtn">Copy</button>
+  </div>
+  <button class="btn ghost" id="callbtn">Call</button>
+</div>
+
+<datalist id="cities">
+  <option>Chandigarh</option><option>Mohali</option><option>Panchkula</option><option>Delhi</option><option>Gurgaon</option><option>Noida</option><option>Faridabad</option><option>Mumbai</option><option>Pune</option><option>Nagpur</option><option>Bangalore</option><option>Hyderabad</option><option>Chennai</option><option>Kolkata</option><option>Ahmedabad</option><option>Surat</option><option>Jaipur</option><option>Lucknow</option><option>Indore</option><option>Bhopal</option><option>Ludhiana</option><option>Amritsar</option><option>Jalandhar</option><option>Patiala</option><option>Shimla</option><option>Dehradun</option>
+</datalist>
+
+<div id="apptabs">
+  <a href="donor.html">Egg Donor</a>
+  <a href="contacts.html" class="on">My Donors</a>
+  <a href="index.html">Surrogacy</a>
+</div>
+
+<script>
+(function(){
+  var PERSONAS = ['Donor','Surrogate','Parent','Clinic','Agent'];
+  var FILTERS = [['all','All'],['none','Untagged'],['Donor','Donors'],['Surrogate','Surrogates'],['Parent','Parents'],['Clinic','Clinics'],['Agent','Agents']];
+  var AGE = range(23,35), BG = ['A+','A-','B+','B-','O+','O-','AB+','AB-'], HT = heights();
+
+  var ALL = [], TAGS = {}, dupes = {}, filter = 'all', query = '', shown = 0, PAGE = 200, selecting = false, picked = {}, current = null;
+
+  function range(a,b){ var o=[]; for(var i=a;i<=b;i++) o.push(String(i)); return o; }
+  function heights(){ var o=[],f=4,i=6; while(f<7||(f===7&&i===0)){ o.push(f+"'"+(i?i:'0')+'"'); i++; if(i===12){i=0;f++;} if(f===7&&i>0) break; } o.push("7'0\""); return o; }
+  function key(p){ var d=(p||'').replace(/[^0-9]/g,''); return d.length>10?d.slice(-10):d; }
+  function el(id){ return document.getElementById(id); }
+  function toast(m){ var t=el('toast'); if(!t){ t=document.createElement('div'); t.className='toast'; t.id='toast'; document.body.appendChild(t);} t.textContent=m; t.hidden=false; clearTimeout(t._h); t._h=setTimeout(function(){ t.hidden=true; },1600); }
+
+  function boot(){
+    if(!window.DB){
+      ALL = [{id:'1',name:'Rekha Sharma',phones:['+91 98765 43210']},{id:'2',name:'Dr Anjali Mehta',phones:['+91 99887 76655']}];
+    } else {
+      try { TAGS = JSON.parse(window.DB.getTags() || '{}'); } catch(e){ TAGS = {}; }
+      try { ALL = JSON.parse(window.DB.getContacts() || '[]'); } catch(e){ ALL = []; }
+    }
+    var seen = {};
+    ALL.forEach(function(c){
+      var k = key((c.phones||[])[0] || '');
+      seen[k] = (seen[k]||0)+1;
+    });
+    dupes = seen;
+    buildChips();
+    render();
+  }
+
+  function buildChips(){
+    el('chips').innerHTML = FILTERS.map(function(f){
+      return '<span class="chip'+(f[0]===filter?' on':'')+'" data-f="'+f[0]+'">'+f[1]+'</span>';
+    }).join('');
+  }
+
+  function personaOf(c){ var t=TAGS[key((c.phones||[])[0]||'')]; return t && t.p ? t.p : ''; }
+
+  function visible(){
+    var q = query.toLowerCase();
+    return ALL.filter(function(c){
+      var p = personaOf(c);
+      if(filter==='none' && p) return false;
+      if(filter!=='all' && filter!=='none' && p!==filter) return false;
+      if(!q) return true;
+      if((c.name||'').toLowerCase().indexOf(q)>=0) return true;
+      return (c.phones||[]).some(function(n){ return n.replace(/[^0-9]/g,'').indexOf(q.replace(/[^0-9]/g,''))>=0; });
+    });
+  }
+
+  function render(){
+    var list = visible();
+    var tagged = ALL.filter(personaOf).length;
+    var donors = ALL.filter(function(c){ return personaOf(c)==='Donor'; }).length;
+    el('stats').textContent = ALL.length+' contacts · '+tagged+' tagged · '+donors+' donors';
+    el('count').textContent = list.length + (list.length===1?' person':' people') + (query?' matching':'');
+    if(!list.length){ el('list').innerHTML = '<div class="center">Nothing here yet.</div>'; el('more').innerHTML=''; return; }
+    var slice = list.slice(0, shown+PAGE);
+    el('list').innerHTML = slice.map(function(c, i){
+      var k = key((c.phones||[])[0]||'');
+      var p = personaOf(c);
+      var d = (dupes[k]||0) > 1 ? '<i class="dup">'+(dupes[k]-1)+' duplicate'+(dupes[k]>2?'s':'')+'</i>' : '';
+      var num = (c.phones||[])[0] || '';
+      return '<div class="row'+(picked[k]?' sel':'')+'" data-k="'+k+'" data-n="'+(c.name||'').replace(/"/g,'&quot;')+'" data-p="'+num+'">'
+        + (selecting ? '<span class="tick'+(picked[k]?'':' off')+'">'+(picked[k]?'✓':'')+'</span>' : '')
+        + '<div class="nm"><b>'+(c.name||'(no name)')+'</b><span class="blurnum">'+num+'</span>'+d+'</div>'
+        + '<span class="tag'+(p?'':' none')+'">'+(p||'Set tag')+'</span></div>';
+    }).join('');
+    el('more').innerHTML = list.length > slice.length ? '<button class="more" id="morebtn">Show more ('+(list.length-slice.length)+' left)</button>' : '';
+  }
+
+  function savePersona(k, p){
+    if(!TAGS[k]) TAGS[k] = {};
+    if(p) TAGS[k].p = p; else delete TAGS[k].p;
+    if(window.DB) window.DB.setTag(k, p||'');
+  }
+  function saveDetail(k, f, v){
+    if(!TAGS[k]) TAGS[k] = {};
+    if(v) TAGS[k][f] = v; else delete TAGS[k][f];
+    if(window.DB) window.DB.setDetail(k, f, v||'');
+  }
+
+  function openSheet(k, name, num){
+    current = {k:k, name:name, num:num};
+    el('sname').textContent = name || '(no name)';
+    el('snum').textContent = num;
+    var t = TAGS[k] || {};
+    el('spersona').innerHTML = PERSONAS.map(function(p){
+      return '<span class="chip'+(t.p===p?' on':'')+'" data-p="'+p+'">'+p+'</span>';
+    }).join('');
+    fill(el('fage'), AGE, t.age); fill(el('fbg'), BG, t.bg); fill(el('fht'), HT, t.ht);
+    el('fcity').value = t.city || '';
+    el('fnote').value = t.note || '';
+    el('sheet').hidden = false; el('scrim').hidden = false;
+  }
+  function fill(sel, opts, val){
+    sel.innerHTML = '<option value=""></option>' + opts.map(function(o){
+      return '<option'+(o===val?' selected':'')+'>'+o+'</option>';
+    }).join('');
+  }
+  function closeSheet(){ el('sheet').hidden = true; el('scrim').hidden = true; current = null; }
+
+  function shareText(){
+    if(!current) return '';
+    var t = TAGS[current.k] || {};
+    var l1 = current.name + (t.age ? ', '+t.age : '');
+    var bits = [t.bg, t.ht, t.city].filter(Boolean);
+    var l2 = bits.join(' · ');
+    var out = l1 + (l2 ? '\n'+l2 : '');
+    if(t.note) out += '\n'+t.note;
+    out += '\n— via Donor Book';
+    return out;
+  }
+
+  // ---------- events ----------
+  el('q').addEventListener('input', function(){ query = this.value.trim(); shown = 0; render(); });
+  el('chips').addEventListener('click', function(e){
+    var c = e.target.closest('.chip'); if(!c) return;
+    filter = c.dataset.f; shown = 0; buildChips(); render();
+  });
+  el('more').addEventListener('click', function(e){ if(e.target.id==='morebtn'){ shown += PAGE; render(); } });
+  el('selbtn').addEventListener('click', function(){
+    selecting = !selecting; picked = {}; render();
+    el('selbar').hidden = !selecting;
+    el('selbtn').textContent = selecting ? 'Cancel' : 'Select';
+    updateSel();
+  });
+  function updateSel(){
+    var n = Object.keys(picked).length;
+    el('selcount').textContent = n + ' selected';
+    el('selchips').innerHTML = PERSONAS.concat(['Clear']).map(function(p){
+      return '<span class="chip" data-p="'+p+'">'+p+'</span>';
+    }).join('');
+  }
+  el('selchips').addEventListener('click', function(e){
+    var c = e.target.closest('.chip'); if(!c) return;
+    var p = c.dataset.p;
+    Object.keys(picked).forEach(function(k){ savePersona(k, p==='Clear' ? '' : p); });
+    picked = {}; updateSel(); render();
+    toast(p==='Clear' ? 'Tags cleared' : 'Tagged as '+p);
+  });
+
+  var pressTimer = null, pressed = false;
+  el('list').addEventListener('pointerdown', function(e){
+    var r = e.target.closest('.row'); if(!r) return;
+    pressed = false;
+    pressTimer = setTimeout(function(){ pressed = true; selecting = true; el('selbar').hidden = false; el('selbtn').textContent = 'Cancel'; picked[r.dataset.k] = true; updateSel(); render(); }, 420);
+  });
+  el('list').addEventListener('pointerup', function(e){
+    var r = e.target.closest('.row'); clearTimeout(pressTimer);
+    if(!r) return;
+    var k = r.dataset.k;
+    if(pressed){ render(); return; }
+    if(selecting){ picked[k] = !picked[k]; if(!picked[k]) delete picked[k]; updateSel(); render(); return; }
+    openSheet(k, r.dataset.n, r.dataset.p);
+  });
+  el('list').addEventListener('pointerleave', function(){ clearTimeout(pressTimer); });
+
+  el('spersona').addEventListener('click', function(e){
+    var c = e.target.closest('.chip'); if(!c || !current) return;
+    var p = c.dataset.p;
+    var t = TAGS[current.k] || {};
+    savePersona(current.k, t.p===p ? '' : p);
+    openSheet(current.k, current.name, current.num);
+    render();
+  });
+  el('fage').addEventListener('change', function(){ if(current){ saveDetail(current.k,'age',this.value); render(); } });
+  el('fbg').addEventListener('change', function(){ if(current){ saveDetail(current.k,'bg',this.value); render(); } });
+  el('fht').addEventListener('change', function(){ if(current){ saveDetail(current.k,'ht',this.value); render(); } });
+  el('fcity').addEventListener('change', function(){ if(current){ saveDetail(current.k,'city',this.value); } });
+  el('fnote').addEventListener('change', function(){ if(current){ saveDetail(current.k,'note',this.value); } });
+  el('closebtn').addEventListener('click', closeSheet);
+  el('scrim').addEventListener('click', closeSheet);
+  el('sharebtn').addEventListener('click', function(){ if(window.DB) window.DB.share(shareText()); else toast('Share'); });
+  el('copybtn').addEventListener('click', function(){
+    var t = shareText();
+    if(navigator.clipboard) navigator.clipboard.writeText(t).then(function(){ toast('Copied'); }, function(){ toast('Copy failed'); });
+    else toast(t);
+  });
+  el('callbtn').addEventListener('click', function(){ if(current && window.DB) window.DB.call(current.num); });
+
+  setTimeout(boot, 60);
+})();
+</script>
+
+</body>
+</html>
