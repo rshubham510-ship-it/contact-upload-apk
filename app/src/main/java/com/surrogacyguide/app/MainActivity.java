@@ -63,6 +63,7 @@ public class MainActivity extends AppCompatActivity {
         webView.getSettings().setJavaScriptEnabled(true);
         webView.getSettings().setDomStorageEnabled(true);
         webView.getSettings().setAllowFileAccess(true);
+        webView.addJavascriptInterface(new ContactsBridge(this), "DB");
 
         // Anything that is not a local file:// page gets handed to the OS.
         // app:// opens the contacts screen. wa.me goes to WhatsApp.
