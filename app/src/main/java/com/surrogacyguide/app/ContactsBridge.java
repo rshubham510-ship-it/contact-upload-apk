@@ -4,6 +4,7 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
 import android.provider.ContactsContract;
@@ -19,15 +20,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * JS bridge for the My Donors page. Callable from JavaScript as window.DB.
- *
- * Calls run on the WebView's JS bridge thread, not the UI thread, so the bulk
- * contact read never janks the screen.
- *
- * Tags and details live on the phone only, keyed by the last 10 digits of the
- * number, so they survive contact id changes and re-syncs.
- */
 public class ContactsBridge {
 
     private static final String PREFS = "book";
@@ -64,8 +56,7 @@ public class ContactsBridge {
             String k = key(phone);
             JSONObject row = all.optJSONObject(k);
             if (row == null) row = new JSONObject();
-            if (persona == null || persona.isEmpty()) row.remove("p");
-            else row.put("p", persona);
+            if (persona == null || persona.isEmpty()) row.remove("p"); else row.put("p", persona);
             all.put(k, row);
             prefs.edit().putString("tags", all.toString()).apply();
         } catch (Exception ignored) { }
@@ -78,8 +69,7 @@ public class ContactsBridge {
             String k = key(phone);
             JSONObject row = all.optJSONObject(k);
             if (row == null) row = new JSONObject();
-            if (value == null || value.isEmpty()) row.remove(field);
-            else row.put(field, value);
+            if (value == null || value.isEmpty()) row.remove(field); else row.put(field, value);
             all.put(k, row);
             prefs.edit().putString("tags", all.toString()).apply();
         } catch (Exception ignored) { }
@@ -106,9 +96,37 @@ public class ContactsBridge {
         } catch (Exception ignored) { }
     }
 
-    /** Bulk phonebook read. One pass, then three lookups for note, birthday and label. */
     @JavascriptInterface
     public String getContacts() {
+        try {
+            return readAll();
+        } catch (Throwable t) {
+            JSONArray out = new JSONArray();
+            JSONObject o = new JSONObject();
+            try {
+                o.put("id", "err");
+                o.put("name", "ERROR " + t.getClass().getSimpleName() + ": " + t.getMessage());
+                o.put("phones", new JSONArray());
+            } catch (Exception ignored) { }
+            out.put(o);
+            return out.toString();
+        }
+    }
+
+    private String readAll() {
+        if (ctx.checkSelfPermission("android.permission.READ_CONTACTS")
+                != PackageManager.PERMISSION_GRANTED) {
+            JSONArray out = new JSONArray();
+            JSONObject o = new JSONObject();
+            try {
+                o.put("id", "err");
+                o.put("name", "No contacts permission");
+                o.put("phones", new JSONArray());
+            } catch (Exception ignored) { }
+            out.put(o);
+            return out.toString();
+        }
+
         Map<String, JSONObject> people = new LinkedHashMap<>();
         ContentResolver cr = ctx.getContentResolver();
 
@@ -117,8 +135,7 @@ public class ContactsBridge {
                 ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME,
                 ContactsContract.CommonDataKinds.Phone.NUMBER
         };
-        Cursor c = cr.query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, P,
-                null, null, ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME + " ASC");
+        Cursor c = cr.query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, P, null, null, null);
         if (c != null) {
             try {
                 while (c.moveToNext()) {
@@ -147,9 +164,9 @@ public class ContactsBridge {
             } finally { c.close(); }
         }
 
-        addNotes(cr, people);
-        addBirthdays(cr, people);
-        addLabels(cr, people);
+        try { addNotes(cr, people); } catch (Exception ignored) { }
+        try { addBirthdays(cr, people); } catch (Exception ignored) { }
+        try { addLabels(cr, people); } catch (Exception ignored) { }
 
         List<JSONObject> list = new ArrayList<>(people.values());
         Collections.sort(list, new Comparator<JSONObject>() {
@@ -180,14 +197,13 @@ public class ContactsBridge {
     private void addBirthdays(ContentResolver cr, Map<String, JSONObject> people) {
         String[] B = {ContactsContract.Data.CONTACT_ID, ContactsContract.CommonDataKinds.Event.START_DATE};
         Cursor c = cr.query(ContactsContract.Data.CONTENT_URI, B,
-                ContactsContract.Data.MIMETYPE + "=? AND " + ContactsContract.CommonDataKinds.Event.TYPE + "=?",
-                new String[]{ContactsContract.CommonDataKinds.Event.CONTENT_ITEM_TYPE,
-                        String.valueOf(ContactsContract.CommonDataKinds.Event.TYPE_BIRTHDAY)}, null);
+                ContactsContract.Data.MIMETYPE + "=?",
+                new String[]{ContactsContract.CommonDataKinds.Event.CONTENT_ITEM_TYPE}, null);
         if (c == null) return;
         try {
             while (c.moveToNext()) {
                 JSONObject o = people.get(c.getString(0));
-                if (o != null) o.put("bday", c.getString(1) == null ? "" : c.getString(1));
+                if (o != null && !o.has("bday")) o.put("bday", c.getString(1) == null ? "" : c.getString(1));
             }
         } catch (Exception ignored) {
         } finally { c.close(); }
@@ -203,7 +219,7 @@ public class ContactsBridge {
             while (c.moveToNext()) {
                 JSONObject o = people.get(c.getString(0));
                 String t = c.getString(1);
-                if (o != null && t != null && !t.startsWith("My Contacts")) o.put("label", t);
+                if (o != null && t != null && !o.has("label")) o.put("label", t);
             }
         } catch (Exception ignored) {
         } finally { c.close(); }
