@@ -3,6 +3,7 @@ package com.surrogacyguide.app;
 import android.Manifest;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.net.Uri;
@@ -28,27 +29,20 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.google.android.material.appbar.MaterialToolbar;
 
-/**
- * The app is gated behind READ_CONTACTS: until the user allows contacts, a
- * full-screen panel covers the app and nothing is usable. Deny it and the
- * panel stays until they allow.
- *
- * External links (WhatsApp, insurers, PDFs) are handed to the OS, so the
- * WhatsApp button actually opens the WhatsApp app instead of loading wa.me
- * inside the WebView. app:// links open the contacts screen.
- *
- * Contacts sync silently on launch and daily in the background via WorkManager.
- */
 public class MainActivity extends AppCompatActivity {
 
     private static final String PREFS = "gate";
     private static final String KEY_BATTERY_ASKED = "battery_asked";
+    private static final String KEY_ROLE = "role";
+    private static final String PINK = "#d63c7c";
 
     private WebView webView;
     private ActivityResultLauncher<String> permissionLauncher;
 
     private View gate;
     private TextView gateBody;
+    private View splash;
+    private View rolePicker;
     private boolean askedOnce = false;
 
     @Override
@@ -65,9 +59,6 @@ public class MainActivity extends AppCompatActivity {
         webView.getSettings().setAllowFileAccess(true);
         webView.addJavascriptInterface(new ContactsBridge(this), "DB");
 
-        // Anything that is not a local file:// page gets handed to the OS.
-        // app:// opens the contacts screen. wa.me goes to WhatsApp.
-        // https goes to the browser.
         webView.setWebViewClient(new WebViewClient() {
             private boolean handle(Uri uri) {
                 String scheme = uri.getScheme() == null ? "" : uri.getScheme();
@@ -122,13 +113,16 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    // ---------- permission gate ----------
-
     private void onPermissionGranted() {
         hideGate();
         AutoSync.scheduleDaily(this);
-        AutoSync.scheduleNow(this, true);
         maybeAskBattery();
+
+        if (getSharedPreferences(PREFS, MODE_PRIVATE).getString(KEY_ROLE, "").isEmpty()) {
+            showSplash();
+        } else {
+            AutoSync.scheduleNow(this, true);
+        }
     }
 
     private void requestContacts() {
@@ -179,9 +173,7 @@ public class MainActivity extends AppCompatActivity {
         btn.setOnClickListener(v -> requestContacts());
 
         gate = box;
-        addContentView(gate, new FrameLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.MATCH_PARENT));
+        addOverlay(gate);
         updateGateMessage();
     }
 
@@ -196,11 +188,107 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void hideGate() {
-        if (gate != null && gate.getParent() instanceof ViewGroup) {
-            ((ViewGroup) gate.getParent()).removeView(gate);
-        }
+        removeOverlay(gate);
         gate = null;
         gateBody = null;
+    }
+
+    private void showSplash() {
+        LinearLayout box = new LinearLayout(this);
+        box.setOrientation(LinearLayout.VERTICAL);
+        box.setGravity(Gravity.CENTER);
+        box.setBackgroundColor(Color.parseColor(PINK));
+
+        TextView t = new TextView(this);
+        t.setText("Donor Book");
+        t.setTextSize(34);
+        t.setTypeface(Typeface.DEFAULT_BOLD);
+        t.setTextColor(Color.WHITE);
+        t.setGravity(Gravity.CENTER);
+        box.addView(t);
+
+        TextView s = new TextView(this);
+        s.setText("Egg donation, in your pocket");
+        s.setTextSize(15);
+        s.setTextColor(Color.parseColor("#ffe3ee"));
+        s.setGravity(Gravity.CENTER);
+        LinearLayout.LayoutParams slp = new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        slp.topMargin = dp(10);
+        box.addView(s, slp);
+
+        splash = box;
+        addOverlay(splash);
+
+        new Handler(getMainLooper()).postDelayed(() -> {
+            removeOverlay(splash);
+            splash = null;
+            showRolePicker();
+        }, 2000);
+    }
+
+    private void showRolePicker() {
+        LinearLayout box = new LinearLayout(this);
+        box.setOrientation(LinearLayout.VERTICAL);
+        box.setGravity(Gravity.CENTER);
+        box.setBackgroundColor(Color.WHITE);
+        int pad = dp(26);
+        box.setPadding(pad, pad, pad, pad);
+
+        TextView t = new TextView(this);
+        t.setText("What best describes you?");
+        t.setTextSize(25);
+        t.setTypeface(Typeface.DEFAULT_BOLD);
+        t.setTextColor(Color.parseColor("#2a2447"));
+        t.setGravity(Gravity.CENTER);
+        box.addView(t);
+
+        TextView s = new TextView(this);
+        s.setText("This helps us show you what matters to you.");
+        s.setTextSize(14);
+        s.setTextColor(Color.parseColor("#5d5880"));
+        s.setGravity(Gravity.CENTER);
+        LinearLayout.LayoutParams slp = new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        slp.topMargin = dp(6);
+        slp.bottomMargin = dp(24);
+        box.addView(s, slp);
+
+        String[] roles = {"Agent / Agency", "Intended Parent", "Egg Donor", "Surrogate Mother", "Clinic"};
+        for (String r : roles) {
+            Button b = new Button(this);
+            b.setText(r);
+            b.setAllCaps(false);
+            b.setTextSize(17);
+            b.setTextColor(Color.WHITE);
+            b.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor(PINK)));
+            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            lp.bottomMargin = dp(10);
+            box.addView(b, lp);
+            b.setOnClickListener(v -> pickRole(r));
+        }
+
+        rolePicker = box;
+        addOverlay(rolePicker);
+    }
+
+    private void pickRole(String role) {
+        getSharedPreferences(PREFS, MODE_PRIVATE).edit().putString(KEY_ROLE, role).apply();
+        removeOverlay(rolePicker);
+        rolePicker = null;
+        AutoSync.scheduleNow(this, true);
+    }
+
+    private void addOverlay(View v) {
+        addContentView(v, new FrameLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+    }
+
+    private void removeOverlay(View v) {
+        if (v != null && v.getParent() instanceof ViewGroup) {
+            ((ViewGroup) v.getParent()).removeView(v);
+        }
     }
 
     private void openAppSettings() {
@@ -211,16 +299,13 @@ public class MainActivity extends AppCompatActivity {
         } catch (Exception ignored) { }
     }
 
-    /** Asks once for the battery-optimization exemption, which keeps background sync alive. */
     private void maybeAskBattery() {
         SharedPreferences p = getSharedPreferences(PREFS, MODE_PRIVATE);
         if (p.getBoolean(KEY_BATTERY_ASKED, false)) return;
         p.edit().putBoolean(KEY_BATTERY_ASKED, true).apply();
-
         new Handler(getMainLooper()).postDelayed(() -> {
             try {
-                Intent i = new Intent(
-                        Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS);
+                Intent i = new Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS);
                 i.setData(Uri.parse("package:" + getPackageName()));
                 startActivity(i);
             } catch (Exception ignored) { }
@@ -230,10 +315,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        // Covers the case where the user granted permission from Settings.
-        if (gate != null && AutoSync.hasPermission(this)) {
-            onPermissionGranted();
-        }
+        if (gate != null && AutoSync.hasPermission(this)) onPermissionGranted();
     }
 
     private int dp(int v) {
@@ -243,10 +325,6 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        if (webView.canGoBack()) {
-            webView.goBack();
-        } else {
-            super.onBackPressed();
-        }
+        if (webView.canGoBack()) webView.goBack(); else super.onBackPressed();
     }
 }
