@@ -55,9 +55,9 @@ ul{margin:0;padding-left:20px}li{margin-bottom:7px}
 <p class="lead"><span lang="en">Who can donate, what the cycle involves, what a donor gets, and what the law says.</span><span lang="hi">कौन दान कर सकती है, प्रक्रिया में क्या होता है, दाता को क्या मिलता है, और कानून क्या कहता है।</span><span lang="pa">ਕੌਣ ਦਾਨ ਕਰ ਸਕਦੀ ਹੈ, ਪ੍ਰਕਿਰਿਆ ਵਿੱਚ ਕੀ ਹੁੰਦਾ ਹੈ, ਦਾਤਾ ਨੂੰ ਕੀ ਮਿਲਦਾ ਹੈ, ਅਤੇ ਕਾਨੂੰਨ ਕੀ ਕਹਿੰਦਾ ਹੈ।</span></p>
 
 <div class="counters">
-  <div><b>231+</b><span lang="en">donors</span><span lang="hi">दाता</span><span lang="pa">ਦਾਤਾ</span></div>
+  <div><b>187+</b><span lang="en">donors</span><span lang="hi">दाता</span><span lang="pa">ਦਾਤਾ</span></div>
   <div><b>23+</b><span lang="en">surrogates</span><span lang="hi">सरोगेट</span><span lang="pa">ਸਰੋਗੇਟ</span></div>
-  <div><b>12+</b><span lang="en">agencies</span><span lang="hi">एजेंसियाँ</span><span lang="pa">ਏਜੰਸੀਆਂ</span></div>
+  <div><b>4+</b><span lang="en">agencies</span><span lang="hi">एजेंसियाँ</span><span lang="pa">ਏਜੰਸੀਆਂ</span></div>
 </div>
 
 <a class="open" href="contacts.html"><span lang="en">Open My Donors</span><span lang="hi">मेरे डोनर खोलें</span><span lang="pa">ਮੇਰੇ ਡੋਨਰ ਖੋਲ੍ਹੋ</span><small lang="en">your own contact book, in this app</small><small lang="hi">इस ऐप में आपकी अपनी संपर्क सूची</small><small lang="pa">ਇਸ ਐਪ ਵਿੱਚ ਤੁਹਾਡੀ ਆਪਣੀ ਸੰਪਰਕ ਸੂਚੀ</small></a>
@@ -134,5 +134,20 @@ ul{margin:0;padding-left:20px}li{margin-bottom:7px}
 })();
 </script>
 
-</body>
+< <script>
+(function(){
+  var all=document.querySelectorAll('div,span,p,li,b,strong,section');
+  for(var i=all.length-1;i>=0;i--){
+    var n=all[i];
+    if(n.children.length>1) continue;
+    if(!/^\d+\+$/.test((n.textContent||'').trim())) continue;
+    var lab=(n.parentNode?n.parentNode.textContent:'').toLowerCase();
+    var kind = lab.indexOf('donor')>=0?'donor' : lab.indexOf('surrog')>=0?'surrogate' : lab.indexOf('agenc')>=0?'agency' : '';
+    if(!kind) continue;
+    var p=n.parentNode;
+    p.style.cursor='pointer';
+    (function(k){p.onclick=function(){location.href='directory.html?t='+k}})(kind);
+  }
+})();
+</script>/body>
 </html>
