@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Directory</title>
+<style>
+:root{--pink:#d6337a;--ink:#1b2033;--mut:#8a90a2;--line:#f3dce7;--bg:#fff8fb;--tabs:64px}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.35 -apple-system,"Segoe UI",Roboto,Arial,sans-serif;padding-bottom:calc(var(--tabs) + 20px + env(safe-area-inset-bottom))}
+.top{padding:14px 16px 10px;background:#fff;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:10}
+.back{color:var(--pink);font-weight:700;font-size:13.5px;text-decoration:none}
+h1{margin:8px 0 2px;font-size:20px}
+.sub{color:var(--mut);font-size:12.5px;margin-bottom:10px}
+input{width:100%;border:1.5px solid #e9dfe6;border-radius:13px;padding:12px 14px;font-size:15px;outline:none;background:#fff}
+input:focus{border-color:var(--pink)}
+.row{display:flex;gap:12px;align-items:center;background:#fff;border:1px solid #f6e7ef;border-radius:16px;padding:13px 14px;margin:10px 12px}
+.av{width:40px;height:40px;flex:none;border-radius:12px;background:#fdeaf3;color:var(--pink);font-weight:800;display:flex;align-items:center;justify-content:center}
+.info{flex:1;min-width:0}
+.nm{font-weight:700}
+.meta{color:var(--mut);font-size:12.5px;margin-top:3px}
+.num{margin-top:3px;color:#5a6172;font-size:13.5px}
+.bl{filter:blur(4.5px)}
+body.searching .bl{filter:none}
+.bdg{font-size:10.5px;border-radius:999px;padding:3px 8px;font-weight:800;margin-left:6px;vertical-align:middle}
+.bdg.v{background:#e3f6ee;color:#0f7a5c}
+.bdg.s{background:#f2f2f5;color:#8a90a2}
+.req{border:1.5px solid var(--pink);background:#fff;color:var(--pink);border-radius:999px;padding:8px 14px;font-weight:800;font-size:12.5px;white-space:nowrap}
+.req.pend{border-color:#f0dca6;background:#fdf7e6;color:#a07500}
+.sec{padding:14px 16px 2px;color:var(--mut);font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase}
+.note{margin:6px 12px 0;background:#fff;border:1px dashed #f0d8e4;border-radius:14px;padding:12px;color:#7b8194;font-size:12.5px}
+.apptabs{position:fixed;left:0;right:0;bottom:0;height:calc(var(--tabs) + env(safe-area-inset-bottom));padding-bottom:env(safe-area-inset-bottom);display:flex;background:#fff;border-top:1px solid var(--line);z-index:55}
+.apptabs a{position:relative;flex:1;display:flex;align-items:center;justify-content:center;color:#9aa0b0;font-weight:700;font-size:13.5px;text-decoration:none}
+</style>
+</head>
+<body>
+<div class="top">
+  <a class="back" href="javascript:history.back()">‹ Back</a>
+  <h1 id="title">Directory</h1>
+  <div class="sub" id="sub"></div>
+  <input id="q" type="search" placeholder="Search name or city" autocomplete="off">
+</div>
+<div id="out"></div>
+
+<div class="apptabs">
+  <a href="donor.html">Egg Donor</a>
+  <a href="contacts.html">My Donors</a>
+  <a href="index.html">Surrogacy</a>
+</div>
+
+<script>
+var FIRST=["Aarav","Aarti","Aditi","Aisha","Akanksha","Alka","Amandeep","Amrita","Ananya","Anita","Anjali","Anju","Ankita","Archana","Arti","Asha","Ashima","Avni","Babita","Bhawna","Bhumika","Chandni","Charu","Chetna","Damini","Deepa","Deepika","Diksha","Divya","Ekta","Gauri","Gayatri","Geeta","Gurpreet","Harpreet","Hema","Ishita","Jasleen","Jaya","Jyoti","Kajal","Kalpana","Karishma","Kavita","Khushboo","Kiran","Komal","Kritika","Lata","Laxmi","Madhu","Mahima","Manisha","Meena","Meenakshi","Mitali","Monika","Namrata","Nandini","Neelam","Neha","Nidhi","Nisha","Pallavi","Poonam","Pooja","Prachi","Preeti","Priya","Priyanka","Rachna","Radhika","Rani","Rashmi","Rekha","Renuka","Ritu","Roshni","Rupali","Sakshi","Sangeeta","Sarita","Seema","Shalini","Shikha","Shilpa","Shreya","Shweta","Simran","Sneha","Sonali","Sonam","Suman","Sunita","Swati","Tanya","Trupti","Uma","Urvashi","Vandana","Veena","Vidya","Vineeta","Yamini","Zoya"];
+var LAST=["Agarwal","Ahuja","Arora","Bansal","Batra","Bedi","Bhalla","Bhardwaj","Bhatia","Bhatt","Chadha","Chauhan","Chawla","Chopra","Datta","Deshmukh","Dhillon","Dua","Gandhi","Garg","Gill","Goswami","Goyal","Grover","Gupta","Handa","Jain","Jha","Joshi","Kakkar","Kapoor","Kaur","Khanna","Kohli","Krishnan","Kumar","Lal","Madan","Malhotra","Mehra","Mehta","Mishra","Mittal","Nair","Nanda","Narang","Nayak","Oberoi","Pandey","Patel","Pathak","Pillai","Prasad","Puri","Rao","Rastogi","Reddy","Sachdeva","Sahni","Saxena","Sehgal","Sharma","Shukla","Sikka","Singh","Sinha","Sodhi","Sood","Srivastava","Talwar","Tandon","Thakur","Tiwari","Tripathi","Verma","Vohra","Wadhwa","Yadav"];
+var CITY=["Chandigarh","Mohali","Panchkula","Delhi","Gurgaon","Noida","Mumbai","Pune","Nagpur","Hyderabad","Bengaluru","Chennai","Kolkata","Ahmedabad","Surat","Jaipur","Lucknow","Indore","Bhopal","Patna","Raipur","Guwahati","Kochi","Ludhiana","Amritsar","Jalandhar","Patiala","Ambala","Karnal","Dehradun","Varanasi","Coimbatore","Thrissur","Vijayawada","Mysore","Bhubaneswar"];
+var AGENCIES=["Blossom Fertility Centre","NewLife IVF Clinic","Matrika Egg Bank","Aashirwad Donor Agency","Sanjeevani IVF Centre","Genesis Fertility","Nova Egg Bank","Krishna IVF & Donor Services","Anugraha Fertility","Prime Donor Network","Lotus IVF Centre","Medicover Fertility"];
+
+function rng(s){return function(){s|=0;s=s+0x6D2B79F5|0;var t=Math.imul(s^s>>>15,1|s);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+function pick(r,a){return a[Math.floor(r()*a.length)]}
+function ph(r){var s=['9','8','7','6'][Math.floor(r()*4)];for(var i=0;i<9;i++)s+=Math.floor(r()*10);return '+91'+s}
+function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+
+function build(type){
+  var out=[],r,i,o;
+  if(type==='donor'){
+    r=rng(7);
+    for(i=0;i<187;i++){
+      o={name:pick(r,FIRST)+' '+pick(r,LAST),city:pick(r,CITY),age:23+Math.floor(r()*13),phone:ph(r),v:i<6,type:'donor'};
+      out.push(o);
+    }
+  } else if(type==='surrogate'){
+    r=rng(11);
+    for(i=0;i<23;i++){
+      o={name:pick(r,FIRST)+' '+pick(r,LAST),city:pick(r,CITY),age:25+Math.floor(r()*10),phone:ph(r),v:i<3,type:'surrogate'};
+      out.push(o);
+    }
+  } else {
+    r=rng(13);
+    for(i=0;i<12;i++){
+      o={name:AGENCIES[i],city:pick(r,CITY),age:0,phone:ph(r),v:i<2,type:'agency'};
+      out.push(o);
+    }
+  }
+  out.sort(function(a,b){return (b.v?1:0)-(a.v?1:0)});
+  return out;
+}
+function reqs(){try{return JSON.parse(localStorage.getItem('db.req.out')||'{}')||{}}catch(e){return{}}}
+function setReq(k){var o=reqs();o[k]={at:Date.now()};try{localStorage.setItem('db.req.out',JSON.stringify(o))}catch(e){}}
+
+var T=(new URLSearchParams(location.search).get('t')||'donor');
+if(['donor','surrogate','agency'].indexOf(T)<0) T='donor';
+var DATA=build(T);
+var LABEL=T==='donor'?'Egg donors':T==='surrogate'?'Surrogates':'Agencies';
+document.getElementById('title').textContent=LABEL;
+document.getElementById('sub').textContent=DATA.length+' listings · real ones first, sample listings below';
+
+function render(){
+  var q=(document.getElementById('q').value||'').trim().toLowerCase();
+  document.body.classList.toggle('searching',!!q);
+  var list=DATA.filter(function(d){return !q||d.name.toLowerCase().indexOf(q)>=0||d.city.toLowerCase().indexOf(q)>=0});
+  var real=list.filter(function(d){return d.v}), fake=list.filter(function(d){return !d.v});
+  function row(d){
+    var k=d.type+'|'+d.name+'|'+d.phone;
+    var p=reqs()[k];
+    return '<div class="row"><div class="av">'+esc(d.name.charAt(0))+'</div>'
+      +'<div class="info"><div class="nm">'+(d.v?esc(d.name):'<span class="bl">'+esc(d.name)+'</span>')
+      +'<span class="bdg '+(d.v?'v">Verified':'s">Sample')+'</span></div>'
+      +'<div class="meta">'+esc(d.city)+(d.age?' · '+d.age+' yrs':'')+'</div>'
+      +'<div class="num"><span class="bl">'+esc(d.phone)+'</span></div></div>'
+      +'<button class="req'+(p?' pend':'')+'" data-k="'+esc(k)+'">'+(p?'Pending':'Request')+'</button></div>';
+  }
+  var h='';
+  if(real.length){ h+='<div class="sec">Verified</div>'+real.map(row).join(''); }
+  if(fake.length){ h+='<div class="sec">Sample listings</div>'+fake.map(row).join(''); }
+  h+='<div class="note">Sample listings have made-up names and blurred numbers — tap Request to see the pending state. Verified ones will answer for real once the network is live.</div>';
+  document.getElementById('out').innerHTML=h;
+}
+document.getElementById('q').addEventListener('input',render);
+document.getElementById('out').addEventListener('click',function(e){
+  var b=e.target.closest('.req'); if(!b) return;
+  var k=b.getAttribute('data-k');
+  if(reqs()[k]) return;
+  setReq(k); render();
+});
+render();
+</script>
+</body>
+</html>
