@@ -1,127 +1,138 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Egg Donation in India - Donor Book</title>
 <style>
-:root{--pink:#d63c7c;--ink:#2a2447;--muted:#5d5880;--line:#f0dbe6;--bg:#fff7fb;--note:#fff3d2;--noteline:#efc45a;--notefg:#5a4310}
+:root{--pink:#d63c7c;--ink:#2a2447;--muted:#5d5880;--line:#f0dbe6;--bg:#fff7fb;--soft:#ffe6f0}
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;padding-bottom:80px}
-.bar{position:sticky;top:0;background:#fff;border-bottom:1px solid var(--line);padding:11px 16px;font-weight:700;color:var(--pink);z-index:5;letter-spacing:.02em}
+html[data-lang="en"] [lang="hi"],html[data-lang="en"] [lang="pa"]{display:none}
+html[data-lang="hi"] [lang="en"],html[data-lang="hi"] [lang="pa"]{display:none}
+html[data-lang="pa"] [lang="en"],html[data-lang="pa"] [lang="hi"]{display:none}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,system-ui,sans-serif;padding-bottom:84px}
+.topbar{position:sticky;top:0;z-index:9;display:flex;align-items:center;justify-content:space-between;gap:8px;background:#fff;border-bottom:1px solid var(--line);padding:10px 14px}
+.brand{font-weight:700;color:var(--pink);font-size:15px}
+.langwrap{display:inline-flex;align-items:center;gap:4px;background:var(--soft);border:1px solid #f7b9d3;border-radius:999px;padding:2px 8px 2px 6px}
+.globe{width:14px;height:14px;fill:none;stroke:#d63c7c;stroke-width:1.6;flex:none}
+.langsel{border:0;background:transparent;font:inherit;font-size:12px;font-weight:700;color:#c2347a;padding:4px 0}
 .wrap{max-width:720px;margin:0 auto;padding:0 16px}
-h1{font-size:1.65rem;line-height:1.25;margin:22px 0 8px}
-h2{font-size:1.18rem;margin:30px 0 10px}
+h1{font-size:1.6rem;line-height:1.28;margin:20px 0 8px}
+h2{font-size:1.14rem;margin:26px 0 8px}
 p{margin:0 0 12px}
-.lead{color:var(--muted);margin-bottom:20px}
-.open{display:block;text-align:center;background:var(--pink);color:#fff;text-decoration:none;font-weight:700;padding:15px;border-radius:14px;margin:18px 0 8px;font-size:1.05rem}
-.open small{display:block;font-weight:400;font-size:.78rem;opacity:.9;margin-top:3px}
-.card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:16px;margin:12px 0}
-ul{margin:0 0 12px;padding-left:20px}li{margin-bottom:7px}
-.note{background:var(--note);border:1px solid var(--noteline);color:var(--notefg);border-radius:12px;padding:12px 14px;margin:16px 0}
-details{background:#fff;border:1px solid var(--line);border-radius:12px;padding:0 14px;margin-bottom:8px}
-summary{cursor:pointer;padding:13px 0;font-weight:600}
-details[open] summary{border-bottom:1px solid var(--line);margin-bottom:10px}
-details>:last-child{margin-bottom:12px}
-.wa{display:block;text-align:center;background:#1fa855;color:#fff;text-decoration:none;font-weight:700;padding:14px;border-radius:999px;margin:24px 0}
-.small{font-size:.86rem;color:var(--muted)}
-.tl{list-style:none;padding:0;margin:0}
-.tl li{border-left:3px solid var(--pink);padding:0 0 16px 14px;margin-left:6px;position:relative}
-.tl li:before{content:"";position:absolute;left:-8px;top:5px;width:13px;height:13px;border-radius:50%;background:var(--pink);border:2px solid #fff}
-.tl b{display:block}
-footer{padding:18px 0;color:var(--muted);font-size:.82rem;border-top:1px solid var(--line);margin-top:30px}
-#apptabs{position:fixed;left:0;right:0;bottom:0;z-index:99999;display:flex;background:#fff;border-top:1px solid #f0dbe6;box-shadow:0 -2px 10px rgba(120,80,160,.10)}
-#apptabs a{flex:1;text-align:center;padding:15px 6px;font-size:.86rem;font-weight:700;text-decoration:none;color:#8a7fa5;letter-spacing:.01em}
+.lead{color:var(--muted);margin-bottom:18px}
+.counters{display:flex;gap:8px;background:#fff;border:1px solid var(--line);border-radius:14px;padding:12px;margin:16px 0;text-align:center}
+.counters div{flex:1}
+.counters b{display:block;font-size:1.2rem;color:var(--pink)}
+.counters span{font-size:.76rem;color:var(--muted)}
+.open{display:block;text-align:center;background:var(--pink);color:#fff;text-decoration:none;font-weight:700;padding:15px;border-radius:14px;margin:0 0 6px}
+.open small{display:block;font-weight:400;font-size:.76rem;opacity:.9;margin-top:3px}
+.card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:15px;margin:10px 0}
+ul{margin:0;padding-left:20px}li{margin-bottom:7px}
+.small{font-size:.85rem;color:var(--muted)}
+.legal{border-top:1px solid var(--line);margin-top:26px;padding:16px 0 4px;font-size:.78rem;color:var(--muted);line-height:1.55}
+.legal p{margin:0 0 8px}
+#apptabs{position:fixed;left:0;right:0;bottom:0;z-index:99;display:flex;background:#fff;border-top:1px solid var(--line)}
+#apptabs a{flex:1;text-align:center;padding:15px 4px;font-size:.78rem;font-weight:700;text-decoration:none;color:#8a7fa5;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 #apptabs a.on{color:var(--pink);box-shadow:inset 0 3px 0 var(--pink)}
 </style>
 </head>
 <body>
-<div class="bar">Donor Book</div>
+
+<div class="topbar">
+  <span class="brand">Donor Book</span>
+  <span class="langwrap">
+    <svg class="globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.6 2.5 15.4 0 18M12 3c-2.5 2.6-2.5 15.4 0 18"/></svg>
+    <select class="langsel" id="langsel" aria-label="Language">
+      <option value="en">EN</option><option value="hi">हिं</option><option value="pa">ਪੰ</option>
+    </select>
+  </span>
+</div>
+
 <div class="wrap">
 
-<h1>Egg donation in India, in plain words</h1>
-<p class="lead">Who can donate, what the cycle involves, what a donor gets, and what the law says. Written for agencies, donors and the families they work with.</p>
+<h1><span lang="en">Egg donation in India, in plain words</span><span lang="hi">भारत में अंडाणु दान, सरल शब्दों में</span><span lang="pa">ਭਾਰਤ ਵਿੱਚ ਆਂਡਾ ਦਾਨ, ਸੌਖੇ ਸ਼ਬਦਾਂ ਵਿੱਚ</span></h1>
+<p class="lead"><span lang="en">Who can donate, what the cycle involves, what a donor gets, and what the law says.</span><span lang="hi">कौन दान कर सकती है, प्रक्रिया में क्या होता है, दाता को क्या मिलता है, और कानून क्या कहता है।</span><span lang="pa">ਕੌਣ ਦਾਨ ਕਰ ਸਕਦੀ ਹੈ, ਪ੍ਰਕਿਰਿਆ ਵਿੱਚ ਕੀ ਹੁੰਦਾ ਹੈ, ਦਾਤਾ ਨੂੰ ਕੀ ਮਿਲਦਾ ਹੈ, ਅਤੇ ਕਾਨੂੰਨ ਕੀ ਕਹਿੰਦਾ ਹੈ।</span></p>
 
-<a class="open" href="app://contacts">Open My Donors<small>your own contact book, inside this app</small></a>
+<div class="counters">
+  <div><b>231+</b><span lang="en">donors</span><span lang="hi">दाता</span><span lang="pa">ਦਾਤਾ</span></div>
+  <div><b>23+</b><span lang="en">surrogates</span><span lang="hi">सरोगेट</span><span lang="pa">ਸਰੋਗੇਟ</span></div>
+  <div><b>12+</b><span lang="en">agencies</span><span lang="hi">एजेंसियाँ</span><span lang="pa">ਏਜੰਸੀਆਂ</span></div>
+</div>
 
-<h2>Who can be an egg donor</h2>
+<a class="open" href="contacts.html"><span lang="en">Open My Donors</span><span lang="hi">मेरे डोनर खोलें</span><span lang="pa">ਮੇਰੇ ਡੋਨਰ ਖੋਲ੍ਹੋ</span><small lang="en">your own contact book, in this app</small><small lang="hi">इस ऐप में आपकी अपनी संपर्क सूची</small><small lang="pa">ਇਸ ਐਪ ਵਿੱਚ ਤੁਹਾਡੀ ਆਪਣੀ ਸੰਪਰਕ ਸੂਚੀ</small></a>
+
+<h2><span lang="en">Who can be an egg donor</span><span lang="hi">अंडाणु दाता कौन बन सकती है</span><span lang="pa">ਆਂਡਾ ਦਾਨ ਕਰਨ ਵਾਲੀ ਕੌਣ ਹੋ ਸਕਦੀ ਹੈ</span></h2>
 <div class="card">
 <ul>
-<li>An <b>ever-married woman</b> &mdash; that is, a woman who has been married at least once</li>
-<li>Aged <b>23 to 35</b> years</li>
-<li>Has <b>at least one living child of her own</b>, and that child is <b>at least three years old</b></li>
-<li>Medically and psychologically fit, with screening completed</li>
-<li>Not a relative of the couple in the usual case &mdash; donation under the Act is anonymous</li>
+<li><span lang="en">An ever-married woman</span><span lang="hi">विवाहित रह चुकी महिला</span><span lang="pa">ਕਦੇ ਵਿਆਹੀ ਹੋਈ ਔਰਤ</span></li>
+<li><span lang="en">Aged 23 to 35</span><span lang="hi">आयु 23 से 35 वर्ष</span><span lang="pa">ਉਮਰ 23 ਤੋਂ 35 ਸਾਲ</span></li>
+<li><span lang="en">Has a living child of her own, at least 3 years old</span><span lang="hi">अपना जीवित बच्चा हो, कम से कम 3 साल का</span><span lang="pa">ਆਪਣਾ ਜੀਵਤ ਬੱਚਾ ਹੋਵੇ, ਘੱਟੋ-ਘੱਟ 3 ਸਾਲ ਦਾ</span></li>
+<li><span lang="en">Medically and psychologically fit</span><span lang="hi">शारीरिक और मानसिक रूप से स्वस्थ</span><span lang="pa">ਸਰੀਰਕ ਅਤੇ ਮਾਨਸਿਕ ਤੌਰ 'ਤੇ ਤੰਦਰੁਸਤ</span></li>
 </ul>
-<p class="small">These come from the Assisted Reproductive Technology (Regulation) Act, 2021. The Act also limits how often a woman may donate and how many eggs are collected in a cycle &mdash; practice varies, so confirm the current position with the bank.</p>
+<p class="small"><span lang="en">Screening includes blood group, HIV, hepatitis B and C, hormones, an ultrasound scan and a psychological check.</span><span lang="hi">जाँच में ब्लड ग्रुप, HIV, हेपेटाइटिस B और C, हार्मोन, अल्ट्रासाउंड और मानसिक परीक्षण शामिल हैं।</span><span lang="pa">ਜਾਂਚ ਵਿੱਚ ਬਲੱਡ ਗਰੁੱਪ, HIV, ਹੈਪੇਟਾਈਟਿਸ B ਅਤੇ C, ਹਾਰਮੋਨ, ਅਲਟਰਾਸਾਊਂਡ ਅਤੇ ਮਾਨਸਿਕ ਜਾਂਚ ਸ਼ਾਮਲ ਹੈ।</span></p>
 </div>
 
-<h2>What a donor gets</h2>
+<h2><span lang="en">What a donor gets</span><span lang="hi">दाता को क्या मिलता है</span><span lang="pa">ਦਾਨ ਕਰਨ ਵਾਲੀ ਨੂੰ ਕੀ ਮਿਲਦਾ ਹੈ</span></h2>
 <div class="card">
 <ul>
-<li><b>Paid.</b> Unlike surrogacy, egg donation is compensated. The Act allows reasonable compensation for her time, effort and expenses.</li>
-<li><b>Insurance cover</b> for the donor, arranged by the commissioning couple.</li>
-<li><b>All medical costs</b> of the cycle &mdash; scans, bloods, medicines, injections, retrieval.</li>
-<li>Care at a registered ART clinic or bank, with proper records.</li>
+<li><span lang="en">Paid. Unlike surrogacy, egg donation is compensated.</span><span lang="hi">भुगतान। सरोगेसी के विपरीत, अंडाणु दान में मुआवज़ा मिलता है।</span><span lang="pa">ਭੁਗਤਾਨ। ਸਰੋਗੇਸੀ ਵਾਂਗ ਨਹੀਂ, ਆਂਡਾ ਦਾਨ ਵਿੱਚ ਮੁਆਵਜ਼ਾ ਮਿਲਦਾ ਹੈ।</span></li>
+<li><span lang="en">Insurance cover for her</span><span lang="hi">उसके लिए बीमा</span><span lang="pa">ਉਸ ਲਈ ਬੀਮਾ</span></li>
+<li><span lang="en">All medical costs of the cycle</span><span lang="hi">चक्र के सभी चिकित्सा खर्च</span><span lang="pa">ਚੱਕਰ ਦੇ ਸਾਰੇ ਡਾਕਟਰੀ ਖਰਚੇ</span></li>
+<li><span lang="en">Care at a registered ART bank</span><span lang="hi">पंजीकृत ART बैंक में देखभाल</span><span lang="pa">ਰਜਿਸਟਰਡ ART ਬੈਂਕ ਵਿੱਚ ਦੇਖਭਾਲ</span></li>
 </ul>
 </div>
 
-<h2>Screening before donation</h2>
-<div class="card">
-<p>Every donor is screened before she starts. Expect most of these:</p>
-<ul>
-<li>Blood group, haemoglobin, complete blood count</li>
-<li>HIV, Hepatitis B, Hepatitis C, syphilis</li>
-<li>Hormones &mdash; AMH, FSH, thyroid, prolactin</li>
-<li>Ultrasound scan and antral follicle count</li>
-<li>Genetic screening such as karyotype or thalassaemia where indicated</li>
-<li>A psychological assessment</li>
-</ul>
-</div>
-
-<h2>The cycle, step by step</h2>
-<ul class="tl">
-<li><b>Day 2&ndash;3 of her period</b>Baseline scan and blood tests. If all is well, stimulation begins.</li>
-<li><b>Days 3 to 12</b>Daily hormone injections, usually 8 to 12 days. She can give them herself at home after a demonstration.</li>
-<li><b>Every 2 to 3 days</b>Short scans and bloods to track how the follicles are growing. Dose may be adjusted.</li>
-<li><b>Trigger injection</b>One final injection timed to the hour, about 34 to 36 hours before retrieval.</li>
-<li><b>Retrieval day</b>A short procedure under light sedation, about 15 to 20 minutes. She goes home the same day.</li>
-<li><b>After</b>A day or two of rest. Mild cramping and light spotting are normal. Her part is over &mdash; the eggs go to the lab.</li>
-</ul>
-
-<h2>Anonymity and consent</h2>
+<h2><span lang="en">The cycle, step by step</span><span lang="hi">प्रक्रिया, चरण दर चरण</span><span lang="pa">ਪ੍ਰਕਿਰਿਆ, ਇੱਕ-ਇੱਕ ਕਦਮ</span></h2>
 <div class="card">
 <ul>
-<li>The couple does <b>not</b> learn the donor's identity, and the donor does not learn theirs.</li>
-<li>The bank shares a <b>non-identifying profile</b>: height, complexion, blood group, education, broad medical history.</li>
-<li>She gives <b>written consent</b>, explained in a language she understands.</li>
-<li>The bank keeps the records. Details also go to the national registry.</li>
+<li><span lang="en">Day 2 to 3: baseline scan and blood tests</span><span lang="hi">दिन 2 से 3: बेसलाइन स्कैन और रक्त जाँच</span><span lang="pa">ਦਿਨ 2 ਤੋਂ 3: ਬੇਸਲਾਈਨ ਸਕੈਨ ਅਤੇ ਖੂਨ ਦੀ ਜਾਂਚ</span></li>
+<li><span lang="en">8 to 12 days: daily injections, which she can give at home</span><span lang="hi">8 से 12 दिन: रोज़ इंजेक्शन, जो वह घर पर ले सकती है</span><span lang="pa">8 ਤੋਂ 12 ਦਿਨ: ਰੋਜ਼ ਇੰਜੈਕਸ਼ਨ, ਜੋ ਉਹ ਘਰ ਲੈ ਸਕਦੀ ਹੈ</span></li>
+<li><span lang="en">Scans every 2 to 3 days</span><span lang="hi">हर 2 से 3 दिन में स्कैन</span><span lang="pa">ਹਰ 2 ਤੋਂ 3 ਦਿਨਾਂ ਬਾਅਦ ਸਕੈਨ</span></li>
+<li><span lang="en">Trigger injection, timed to the hour</span><span lang="hi">ट्रिगर इंजेक्शन, घंटे तक का समय</span><span lang="pa">ਟ੍ਰਿਗਰ ਇੰਜੈਕਸ਼ਨ, ਘੰਟੇ ਦਾ ਸਮਾਂ</span></li>
+<li><span lang="en">Retrieval under light sedation, home the same day</span><span lang="hi">हल्की नींद में अंडाणु निकालना, उसी दिन घर</span><span lang="pa">ਹਲਕੀ ਨੀਂਦ ਵਿੱਚ ਆਂਡੇ ਕੱਢਣਾ, ਉਸੇ ਦਿਨ ਘਰ</span></li>
 </ul>
 </div>
 
-<h2>Common questions</h2>
-<details><summary>Is the retrieval painful?</summary><p>It is done under light sedation, so most donors feel nothing during it. Afterwards there can be mild cramping for a day or two, like period pain.</p></details>
-<details><summary>How long does the whole thing take?</summary><p>About two weeks of injections, plus the retrieval day. Monitoring visits are short.</p></details>
-<details><summary>Can she keep working?</summary><p>Yes. The scans are quick and injections are at home. Most donors take one day off for the retrieval.</p></details>
-<details><summary>Will it affect her own fertility?</summary><p>No. The eggs collected are the ones her body was going to lose that month anyway.</p></details>
-<details><summary>Can she donate more than once?</summary><p>The Act limits repeat donation. Ask the bank what the current position is before promising a donor a second cycle.</p></details>
-<details><summary>Does she meet the couple?</summary><p>Usually not. The match is made on the profile sheet, not on meeting.</p></details>
-
-<div class="note">
-<p><b>For agencies:</b> the three conditions that most often disqualify a donor are the ever-married requirement, the age band, and the three-year-old child. Screen for those three before anything else.</p>
+<h2><span lang="en">Anonymity and consent</span><span lang="hi">गोपनीयता और सहमति</span><span lang="pa">ਗੁਪਤਤਾ ਅਤੇ ਸਹਿਮਤੀ</span></h2>
+<div class="card">
+<ul>
+<li><span lang="en">The couple does not learn her identity</span><span lang="hi">दंपति को उसकी पहचान नहीं बताई जाती</span><span lang="pa">ਜੋੜੇ ਨੂੰ ਉਸ ਦੀ ਪਛਾਣ ਨਹੀਂ ਦੱਸੀ ਜਾਂਦੀ</span></li>
+<li><span lang="en">She does not learn theirs</span><span lang="hi">उसे उनकी पहचान नहीं बताई जाती</span><span lang="pa">ਉਸ ਨੂੰ ਉਨ੍ਹਾਂ ਦੀ ਪਛਾਣ ਨਹੀਂ ਦੱਸੀ ਜਾਂਦੀ</span></li>
+<li><span lang="en">The bank shares a non-identifying profile</span><span lang="hi">बैंक बिना पहचान वाली प्रोफ़ाइल साझा करता है</span><span lang="pa">ਬੈਂਕ ਬਿਨਾਂ ਪਛਾਣ ਵਾਲੀ ਪਰੋਫ਼ਾਈਲ ਸਾਂਝੀ ਕਰਦਾ ਹੈ</span></li>
+</ul>
 </div>
 
-<a class="wa" href="https://wa.me/919187675981?text=Hi%2C%20I%20have%20a%20question%20about%20egg%20donation">Message us on WhatsApp</a>
-
-<footer>
-<p>General information, not medical or legal advice. Rules and clinic practice change &mdash; confirm every step with your ART bank, clinic or a lawyer. Written against the ART (Regulation) Act, 2021. Reviewed October 2026.</p>
-</footer>
+<div class="legal">
+<p><b>Donor Book</b> &mdash; a free tool for egg donor agencies, donors and clinics. Independent, not affiliated with any clinic or government office.</p>
+<p>General information, not medical or legal advice. Rules quoted from the Assisted Reproductive Technology (Regulation) Act, 2021 and the ART (Regulation) Rules, 2022. Practice varies by state and clinic &mdash; confirm every step with your ART bank, clinic or lawyer.</p>
+<p>Last reviewed October 2026.</p>
+</div>
 
 </div>
 
 <div id="apptabs">
   <a href="donor.html" class="on">Egg Donor</a>
-  <a href="index.html">Surrogacy Guide</a>
+  <a href="contacts.html">My Donors</a>
+  <a href="index.html">Surrogacy</a>
 </div>
+
+<script>
+(function(){
+  var sel = document.getElementById('langsel');
+  function set(l){
+    document.documentElement.setAttribute('data-lang', l);
+    document.documentElement.lang = l;
+    sel.value = l;
+    try{ localStorage.setItem('dblang', l); }catch(e){}
+  }
+  var saved = 'en';
+  try{ saved = localStorage.getItem('dblang') || 'en'; }catch(e){}
+  if(['en','hi','pa'].indexOf(saved) < 0) saved = 'en';
+  set(saved);
+  sel.addEventListener('change', function(){ set(this.value); });
+})();
+</script>
+
 </body>
 </html>
