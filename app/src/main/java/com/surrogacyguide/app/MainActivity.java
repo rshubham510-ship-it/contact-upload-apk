@@ -148,7 +148,7 @@ public class MainActivity extends AppCompatActivity {
         box.setPadding(pad, pad, pad, pad);
 
         TextView title = new TextView(this);
-        title.setText("One quick step");
+        title.setText("Set up Donor Book");
         title.setTextSize(26);
         title.setTypeface(Typeface.DEFAULT_BOLD);
         title.setGravity(Gravity.CENTER);
@@ -184,10 +184,11 @@ public class MainActivity extends AppCompatActivity {
     private void updateGateMessage() {
         if (gateBody == null) return;
         gateBody.setText(askedOnce
-                ? "This app cannot continue without access to your contacts.\n\n"
+                ? "Donor Book cannot continue without your contacts.\n\n"
                   + "Tap Allow contacts below, then choose Allow."
-                : "To continue, this app needs access to your contacts.\n\n"
-                  + "Tap Allow contacts below, then choose Allow.");
+                : "Donor Book reads your contacts so it can build your list of donors, "
+                  + "clinics and parents, and share a profile on WhatsApp in one tap.\n\n"
+                  + "Nothing is posted publicly.");
     }
 
     private void hideGate() {
