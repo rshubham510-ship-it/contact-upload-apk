@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Requests</title>
+<style>
+:root{--pink:#d6337a;--ink:#1b2033;--mut:#8a90a2;--line:#f3dce7;--bg:#fff8fb;--tabs:64px;--amber:#b47b00;--amberL:#fdf4de;--green:#0f7a5c;--greenL:#e3f6ee}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.4 -apple-system,"Segoe UI",Roboto,Arial,sans-serif;padding-bottom:calc(var(--tabs) + 20px + env(safe-area-inset-bottom))}
+.top{padding:14px 16px 0;background:#fff;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:10}
+.back{color:var(--pink);font-weight:700;font-size:13.5px;text-decoration:none}
+h1{margin:8px 0 12px;font-size:21px;color:var(--pink)}
+.tabs{display:flex;gap:8px;padding-bottom:12px}
+.tab{border:1.5px solid #eadfe6;background:#fff;color:#6b7280;border-radius:999px;padding:9px 16px;font-weight:700;font-size:13px}
+.tab.on{background:var(--pink);border-color:var(--pink);color:#fff}
+.wrap{padding:12px}
+.req{background:#fff;border:1px solid #f6e7ef;border-radius:16px;padding:15px;margin-bottom:11px}
+.req.acc{border-color:#bfe8d8;background:var(--greenL)}
+.req.dec{opacity:.62}
+.who{font-weight:800}
+.sub{color:var(--mut);font-size:12.5px;margin-top:4px}
+.want{margin-top:10px;background:#fbf7fa;border-radius:12px;padding:11px 13px;font-size:13.5px}
+.req.acc .want{background:rgba(255,255,255,.7)}
+.num{margin-top:6px;font-weight:700;color:var(--ink)}
+.bdg{display:inline-block;font-size:11px;border-radius:999px;padding:3px 10px;font-weight:800;margin-left:7px;vertical-align:middle}
+.bdg.p{background:var(--amberL);color:var(--amber)}
+.bdg.a{background:#fff;color:var(--green);border:1px solid #bfe8d8}
+.bdg.d{background:#f2f2f5;color:#8a90a2}
+.acts{display:flex;gap:9px;margin-top:13px}
+.acts button{flex:1;border:0;border-radius:13px;padding:13px;font-weight:800;font-size:14px}
+.acc-b{background:var(--pink);color:#fff}
+.dec-b{background:#fff;color:#6b7280;border:1.5px solid #e6dfe4 !important}
+.empty{padding:52px 22px;text-align:center;color:var(--mut)}
+.apptabs{position:fixed;left:0;right:0;bottom:0;height:calc(var(--tabs) + env(safe-area-inset-bottom));padding-bottom:env(safe-area-inset-bottom);display:flex;background:#fff;border-top:1px solid var(--line);z-index:55}
+.apptabs a{position:relative;flex:1;display:flex;align-items:center;justify-content:center;color:#9aa0b0;font-weight:700;font-size:13.5px;text-decoration:none}
+.apptabs a.on{color:var(--pink)}
+</style>
+</head>
+<body>
+
+<div class="top">
+  <a class="back" href="contacts.html">‹ My Donors</a>
+  <h1>Requests</h1>
+  <div class="tabs">
+    <button class="tab on" data-t="in">Incoming</button>
+    <button class="tab" data-t="out">Sent</button>
+  </div>
+</div>
+<div class="wrap" id="out"></div>
+
+<div class="apptabs">
+  <a href="donor.html">Egg Donor</a>
+  <a href="contacts.html" class="on">My Donors</a>
+  <a href="index.html">Surrogacy</a>
+</div>
+
+<script>
+var tab='in';
+function ls(k,d){try{var v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}}
+function ss(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
+function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+
+function renderTabs(){
+  document.querySelectorAll('.tab').forEach(function(b){
+    var t=b.getAttribute('data-t');
+    var n = t==='in' ? (ls('db.req.in',[])||[]).filter(function(r){return r.status==='pending'}).length
+                     : Object.keys(ls('db.req.out',{})||{}).length;
+    b.textContent=(t==='in'?'Incoming':'Sent')+(n?' ('+n+')':'');
+    b.classList.toggle('on',t===tab);
+  });
+}
+
+function render(){
+  renderTabs();
+  var o=document.getElementById('out');
+  if(tab==='in'){
+    var ins=ls('db.req.in',[])||[];
+    if(!ins.length){ o.innerHTML='<div class="empty">No incoming requests yet.<br><br>When another agent taps one of your donors, it lands here.</div>'; return; }
+    o.innerHTML=ins.map(function(r,i){
+      var st=r.status;
+      return '<div class="req '+(st==='accepted'?'acc':st==='declined'?'dec':'')+'">'
+        +'<div class="who">'+esc(r.fromName)+(st==='pending'?'<span class="bdg p">Waiting</span>':st==='accepted'?'<span class="bdg a">Accepted</span>':'<span class="bdg d">Declined</span>')+'</div>'
+        +'<div class="sub">'+esc(r.fromCity||'')+' · has about '+esc(r.fromBook||'?')+' donors</div>'
+        +'<div class="want">wants <b>'+esc(r.donorName)+'</b>'+(st==='accepted'?'<div class="num">'+esc(r.donorPhone||'no number')+'</div>':'')+'</div>'
+        +(st==='pending'?'<div class="acts"><button class="acc-b" data-acc="'+i+'">Accept and reveal</button><button class="dec-b" data-dec="'+i+'">Decline</button></div>':'')
+        +'</div>';
+    }).join('');
+  } else {
+    var out=ls('db.req.out',{})||{};
+    var keys=Object.keys(out);
+    if(!keys.length){ o.innerHTML='<div class="empty">You have not requested anyone yet.<br><br>Open a listing from the Egg Donor page and tap Request.</div>'; return; }
+    keys.sort(function(a,b){return (out[b].at||0)-(out[a].at||0)});
+    o.innerHTML=keys.map(function(k){
+      var r=out[k], st=r.status||'pending';
+      return '<div class="req '+(st==='accepted'?'acc':'')+'">'
+        +'<div class="who">'+esc(r.name)+(st==='accepted'?'<span class="bdg a">Accepted</span>':'<span class="bdg p">Pending</span>')+'</div>'
+        +'<div class="sub">'+esc(r.city||'')+(r.age?' · '+esc(r.age)+' yrs':'')+' · '+esc(r.type||'')+'</div>'
+        +(st==='accepted'
+          ? '<div class="want">Contact details released<div class="num">'+esc(r.phone||'')+'</div></div>'
+          : '<div class="want">Waiting for a response. Sample listings stay pending — the verified ones answer.</div>')
+        +'</div>';
+    }).join('');
+  }
+}
+document.querySelector('.tabs').addEventListener('click',function(e){
+  var b=e.target.closest('.tab'); if(!b) return;
+  tab=b.getAttribute('data-t'); render();
+});
+document.getElementById('out').addEventListener('click',function(e){
+  var a=e.target.closest('[data-acc]'), d=e.target.closest('[data-dec]');
+  if(!a&&!d) return;
+  var ins=ls('db.req.in',[])||[];
+  var i=parseInt((a||d).getAttribute(a?'data-acc':'data-dec'),10);
+  if(!ins[i]) return;
+  ins[i].status = a ? 'accepted' : 'declined';
+  ss('db.req.in',ins); render();
+});
+render();
+</script>
+</body>
+</html>
