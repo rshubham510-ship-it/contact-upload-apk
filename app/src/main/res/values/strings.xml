@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Surrogacy Guide</string>
+    <string name="app_name">Donor Book</string>
     <string name="contacts_title">Upload Contacts (test)</string>
     <string name="contacts_intro">This screen reads contacts from this phone and uploads their name, phone number and email so they can be tested in the upload tool. Nothing is sent until you tap the button below.</string>
     <string name="contacts_button_idle">Allow and upload all contacts</string>
