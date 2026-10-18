@@ -5,30 +5,39 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Directory</title>
 <style>
-:root{--pink:#d6337a;--ink:#1b2033;--mut:#8a90a2;--line:#f3dce7;--bg:#fff8fb;--tabs:64px}
+:root{--pink:#d6337a;--ink:#1b2033;--mut:#8a90a2;--line:#f3dce7;--bg:#fff8fb;--tabs:64px;--amber:#b47b00;--amberL:#fdf4de;--green:#0f7a5c;--greenL:#e3f6ee}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.35 -apple-system,"Segoe UI",Roboto,Arial,sans-serif;padding-bottom:calc(var(--tabs) + 20px + env(safe-area-inset-bottom))}
 .top{padding:14px 16px 10px;background:#fff;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:10}
 .back{color:var(--pink);font-weight:700;font-size:13.5px;text-decoration:none}
 h1{margin:8px 0 2px;font-size:20px}
 .sub{color:var(--mut);font-size:12.5px;margin-bottom:10px}
+.quota{display:flex;align-items:center;gap:8px;font-size:12.5px;font-weight:700;border-radius:11px;padding:9px 12px;margin-bottom:10px}
+.quota.free{background:var(--greenL);color:var(--green)}
+.quota.low{background:var(--amberL);color:var(--amber)}
+.quota.out{background:#f2f2f5;color:#8a90a2}
 input{width:100%;border:1.5px solid #e9dfe6;border-radius:13px;padding:12px 14px;font-size:15px;outline:none;background:#fff}
 input:focus{border-color:var(--pink)}
 .row{display:flex;gap:12px;align-items:center;background:#fff;border:1px solid #f6e7ef;border-radius:16px;padding:13px 14px;margin:10px 12px}
+.row.acc{border-color:#bfe8d8;background:var(--greenL)}
 .av{width:40px;height:40px;flex:none;border-radius:12px;background:#fdeaf3;color:var(--pink);font-weight:800;display:flex;align-items:center;justify-content:center}
 .info{flex:1;min-width:0}
 .nm{font-weight:700}
 .meta{color:var(--mut);font-size:12.5px;margin-top:3px}
 .num{margin-top:3px;color:#5a6172;font-size:13.5px}
-.bl{filter:blur(4.5px)}
-body.searching .bl{filter:none}
+.blk{filter:blur(4.5px)}
 .bdg{font-size:10.5px;border-radius:999px;padding:3px 8px;font-weight:800;margin-left:6px;vertical-align:middle}
 .bdg.v{background:#e3f6ee;color:#0f7a5c}
 .bdg.s{background:#f2f2f5;color:#8a90a2}
+.bdg.a{background:#fff;color:var(--green);border:1px solid #bfe8d8}
 .req{border:1.5px solid var(--pink);background:#fff;color:var(--pink);border-radius:999px;padding:8px 14px;font-weight:800;font-size:12.5px;white-space:nowrap}
 .req.pend{border-color:#f0dca6;background:#fdf7e6;color:#a07500}
+.req.done{border-color:#bfe8d8;background:#fff;color:var(--green)}
+.req:disabled{opacity:.45}
 .sec{padding:14px 16px 2px;color:var(--mut);font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase}
 .note{margin:6px 12px 0;background:#fff;border:1px dashed #f0d8e4;border-radius:14px;padding:12px;color:#7b8194;font-size:12.5px}
+.toast{position:fixed;left:16px;right:16px;bottom:calc(var(--tabs) + 14px + env(safe-area-inset-bottom));background:#1b2033;color:#fff;border-radius:14px;padding:13px 15px;font-size:13.5px;font-weight:700;display:none;z-index:60}
+.toast.on{display:block}
 .apptabs{position:fixed;left:0;right:0;bottom:0;height:calc(var(--tabs) + env(safe-area-inset-bottom));padding-bottom:env(safe-area-inset-bottom);display:flex;background:#fff;border-top:1px solid var(--line);z-index:55}
 .apptabs a{position:relative;flex:1;display:flex;align-items:center;justify-content:center;color:#9aa0b0;font-weight:700;font-size:13.5px;text-decoration:none}
 </style>
@@ -38,9 +47,11 @@ body.searching .bl{filter:none}
   <a class="back" href="javascript:history.back()">‹ Back</a>
   <h1 id="title">Directory</h1>
   <div class="sub" id="sub"></div>
+  <div class="quota free" id="quota"></div>
   <input id="q" type="search" placeholder="Search name or city" autocomplete="off">
 </div>
 <div id="out"></div>
+<div class="toast" id="toast"></div>
 
 <div class="apptabs">
   <a href="donor.html">Egg Donor</a>
@@ -49,6 +60,7 @@ body.searching .bl{filter:none}
 </div>
 
 <script>
+var MAXDAY=5, ACCEPT_AFTER=18000;
 var FIRST=["Aarav","Aarti","Aditi","Aisha","Akanksha","Alka","Amandeep","Amrita","Ananya","Anita","Anjali","Anju","Ankita","Archana","Arti","Asha","Ashima","Avni","Babita","Bhawna","Bhumika","Chandni","Charu","Chetna","Damini","Deepa","Deepika","Diksha","Divya","Ekta","Gauri","Gayatri","Geeta","Gurpreet","Harpreet","Hema","Ishita","Jasleen","Jaya","Jyoti","Kajal","Kalpana","Karishma","Kavita","Khushboo","Kiran","Komal","Kritika","Lata","Laxmi","Madhu","Mahima","Manisha","Meena","Meenakshi","Mitali","Monika","Namrata","Nandini","Neelam","Neha","Nidhi","Nisha","Pallavi","Poonam","Pooja","Prachi","Preeti","Priya","Priyanka","Rachna","Radhika","Rani","Rashmi","Rekha","Renuka","Ritu","Roshni","Rupali","Sakshi","Sangeeta","Sarita","Seema","Shalini","Shikha","Shilpa","Shreya","Shweta","Simran","Sneha","Sonali","Sonam","Suman","Sunita","Swati","Tanya","Trupti","Uma","Urvashi","Vandana","Veena","Vidya","Vineeta","Yamini","Zoya"];
 var LAST=["Agarwal","Ahuja","Arora","Bansal","Batra","Bedi","Bhalla","Bhardwaj","Bhatia","Bhatt","Chadha","Chauhan","Chawla","Chopra","Datta","Deshmukh","Dhillon","Dua","Gandhi","Garg","Gill","Goswami","Goyal","Grover","Gupta","Handa","Jain","Jha","Joshi","Kakkar","Kapoor","Kaur","Khanna","Kohli","Krishnan","Kumar","Lal","Madan","Malhotra","Mehra","Mehta","Mishra","Mittal","Nair","Nanda","Narang","Nayak","Oberoi","Pandey","Patel","Pathak","Pillai","Prasad","Puri","Rao","Rastogi","Reddy","Sachdeva","Sahni","Saxena","Sehgal","Sharma","Shukla","Sikka","Singh","Sinha","Sodhi","Sood","Srivastava","Talwar","Tandon","Thakur","Tiwari","Tripathi","Verma","Vohra","Wadhwa","Yadav"];
 var CITY=["Chandigarh","Mohali","Panchkula","Delhi","Gurgaon","Noida","Mumbai","Pune","Nagpur","Hyderabad","Bengaluru","Chennai","Kolkata","Ahmedabad","Surat","Jaipur","Lucknow","Indore","Bhopal","Patna","Raipur","Guwahati","Kochi","Ludhiana","Amritsar","Jalandhar","Patiala","Ambala","Karnal","Dehradun","Varanasi","Coimbatore","Thrissur","Vijayawada","Mysore","Bhubaneswar"];
@@ -58,70 +70,89 @@ function rng(s){return function(){s|=0;s=s+0x6D2B79F5|0;var t=Math.imul(s^s>>>15
 function pick(r,a){return a[Math.floor(r()*a.length)]}
 function ph(r){var s=['9','8','7','6'][Math.floor(r()*4)];for(var i=0;i<9;i++)s+=Math.floor(r()*10);return '+91'+s}
 function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+function ls(k,d){try{var v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}}
+function ss(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
 
 function build(type){
   var out=[],r,i,o;
-  if(type==='donor'){
-    r=rng(7);
-    for(i=0;i<187;i++){
-      o={name:pick(r,FIRST)+' '+pick(r,LAST),city:pick(r,CITY),age:23+Math.floor(r()*13),phone:ph(r),v:i<6,type:'donor'};
-      out.push(o);
-    }
-  } else if(type==='surrogate'){
-    r=rng(11);
-    for(i=0;i<23;i++){
-      o={name:pick(r,FIRST)+' '+pick(r,LAST),city:pick(r,CITY),age:25+Math.floor(r()*10),phone:ph(r),v:i<3,type:'surrogate'};
-      out.push(o);
-    }
-  } else {
-    r=rng(13);
-    for(i=0;i<12;i++){
-      o={name:AGENCIES[i],city:pick(r,CITY),age:0,phone:ph(r),v:i<2,type:'agency'};
-      out.push(o);
-    }
+  if(type==='donor'){ r=rng(7);
+    for(i=0;i<187;i++) out.push({name:pick(r,FIRST)+' '+pick(r,LAST),city:pick(r,CITY),age:23+Math.floor(r()*13),phone:ph(r),v:i<6,auto:i%3===1,type:'donor'});
+  } else if(type==='surrogate'){ r=rng(11);
+    for(i=0;i<23;i++) out.push({name:pick(r,FIRST)+' '+pick(r,LAST),city:pick(r,CITY),age:25+Math.floor(r()*10),phone:ph(r),v:i<3,auto:i%3===1,type:'surrogate'});
+  } else { r=rng(13);
+    for(i=0;i<12;i++) out.push({name:AGENCIES[i],city:pick(r,CITY),age:0,phone:ph(r),v:i<2,auto:i%3===1,type:'agency'});
   }
   out.sort(function(a,b){return (b.v?1:0)-(a.v?1:0)});
   return out;
 }
-function reqs(){try{return JSON.parse(localStorage.getItem('db.req.out')||'{}')||{}}catch(e){return{}}}
-function setReq(k){var o=reqs();o[k]={at:Date.now()};try{localStorage.setItem('db.req.out',JSON.stringify(o))}catch(e){}}
+function reqs(){return ls('db.req.out',{})||{}}
+function todayKey(){var d=new Date();return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate()}
+function usedToday(){var o=ls('db.req.day',{})||{};return o.d===todayKey()?(o.n||0):0}
+function bumpDay(){var o=ls('db.req.day',{})||{};var n=(o.d===todayKey()?(o.n||0):0)+1;ss('db.req.day',{d:todayKey(),n:n})}
 
 var T=(new URLSearchParams(location.search).get('t')||'donor');
 if(['donor','surrogate','agency'].indexOf(T)<0) T='donor';
 var DATA=build(T);
-var LABEL=T==='donor'?'Egg donors':T==='surrogate'?'Surrogates':'Agencies';
-document.getElementById('title').textContent=LABEL;
-document.getElementById('sub').textContent=DATA.length+' listings · real ones first, sample listings below';
+document.getElementById('title').textContent = T==='donor'?'Egg donors':T==='surrogate'?'Surrogates':'Agencies';
+document.getElementById('sub').textContent = DATA.length+' listings · verified first, sample listings below';
+
+function renderQuota(){
+  var used=usedToday(), left=MAXDAY-used, q=document.getElementById('quota');
+  q.className='quota '+(left<=0?'out':left<=2?'low':'free');
+  q.textContent = left<=0 ? 'Daily limit reached — 5 of 5 requests sent. Resets tomorrow.'
+    : left+' of 5 requests left today'+(used?' · '+used+' sent':'');
+}
 
 function render(){
   var q=(document.getElementById('q').value||'').trim().toLowerCase();
   document.body.classList.toggle('searching',!!q);
   var list=DATA.filter(function(d){return !q||d.name.toLowerCase().indexOf(q)>=0||d.city.toLowerCase().indexOf(q)>=0});
   var real=list.filter(function(d){return d.v}), fake=list.filter(function(d){return !d.v});
+  var R=reqs(), used=usedToday(), full=used>=MAXDAY;
   function row(d){
-    var k=d.type+'|'+d.name+'|'+d.phone;
-    var p=reqs()[k];
-    return '<div class="row"><div class="av">'+esc(d.name.charAt(0))+'</div>'
-      +'<div class="info"><div class="nm">'+(d.v?esc(d.name):'<span class="bl">'+esc(d.name)+'</span>')
-      +'<span class="bdg '+(d.v?'v">Verified':'s">Sample')+'</span></div>'
+    var k=d.type+'|'+d.name+'|'+d.phone, r=R[k], st=r&&r.status;
+    var btn = st==='accepted' ? '<button class="req done" disabled>Accepted</button>'
+            : st==='pending'  ? '<button class="req pend" disabled>Pending</button>'
+            : '<button class="req" data-k="'+esc(k)+'"'+(full?' disabled':'')+'>'+(full?'Limit':'Request')+'</button>';
+    return '<div class="row'+(st==='accepted'?' acc':'')+'"><div class="av">'+esc(d.name.charAt(0))+'</div>'
+      +'<div class="info"><div class="nm">'+esc(d.name)
+      +'<span class="bdg '+(d.v?'v">Verified':(st==='accepted'?'a">Accepted':'s">Sample'))+'</span></div>'
       +'<div class="meta">'+esc(d.city)+(d.age?' · '+d.age+' yrs':'')+'</div>'
-      +'<div class="num"><span class="bl">'+esc(d.phone)+'</span></div></div>'
-      +'<button class="req'+(p?' pend':'')+'" data-k="'+esc(k)+'">'+(p?'Pending':'Request')+'</button></div>';
+      +'<div class="num"><span'+(st==='accepted'?'':'" class="blk')+'">'+esc(d.phone)+'</span></div></div>'
+      +btn+'</div>';
   }
   var h='';
   if(real.length){ h+='<div class="sec">Verified</div>'+real.map(row).join(''); }
   if(fake.length){ h+='<div class="sec">Sample listings</div>'+fake.map(row).join(''); }
-  h+='<div class="note">Sample listings have made-up names and blurred numbers — tap Request to see the pending state. Verified ones will answer for real once the network is live.</div>';
+  h+='<div class="note">Sample listings carry made-up names with the number blurred. Tap Request — one in three answers after a few seconds and reveals the number; the rest stay pending. Verified listings will answer for real once the network is live.</div>';
   document.getElementById('out').innerHTML=h;
+  renderQuota();
+}
+function tick(){
+  var R=reqs(), ch=false;
+  Object.keys(R).forEach(function(k){
+    var r=R[k];
+    if(r.status==='pending' && r.auto && (Date.now()-(r.at||0))>ACCEPT_AFTER){ r.status='accepted'; ch=true; }
+  });
+  if(ch){ ss('db.req.out',R); render(); toast('A request was accepted — contact details released'); }
+}
+function toast(m){
+  var t=document.getElementById('toast'); t.textContent=m; t.classList.add('on');
+  setTimeout(function(){t.classList.remove('on')},2600);
 }
 document.getElementById('q').addEventListener('input',render);
 document.getElementById('out').addEventListener('click',function(e){
-  var b=e.target.closest('.req'); if(!b) return;
-  var k=b.getAttribute('data-k');
-  if(reqs()[k]) return;
-  setReq(k); render();
+  var b=e.target.closest('.req'); if(!b||b.disabled) return;
+  var k=b.getAttribute('data-k'); if(!k) return;
+  if(usedToday()>=MAXDAY){ toast('Daily limit reached — 5 requests already sent today'); return; }
+  var d=DATA.filter(function(x){return x.type+'|'+x.name+'|'+x.phone===k})[0]; if(!d) return;
+  var R=reqs();
+  R[k]={name:d.name,city:d.city,age:d.age,phone:d.phone,type:d.type,auto:!!d.auto,at:Date.now(),status:'pending'};
+  ss('db.req.out',R); bumpDay(); render();
+  toast('Request sent to '+d.name+' — see it under Requests › Sent');
 });
 render();
+setInterval(tick,5000);
 </script>
 </body>
 </html>
