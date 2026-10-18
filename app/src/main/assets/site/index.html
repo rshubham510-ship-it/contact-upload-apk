@@ -409,7 +409,7 @@ background:repeating-linear-gradient(180deg,#fff 0,#fff 1123px,#e7e1ee 1123px,#e
   </nav>
   <div class="seg" role="group" aria-label="Language / भाषा">
     <svg class="globe" viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="3" width="13" height="13" rx="3" fill="#d63c7c" stroke="none"/><path d="M5 7.500h7M8.500 6v1.500M6 12c2.500-1 4-3 4.500-4.500M7.500 9.500c1 1.700 2.500 2.800 4 3.200" stroke="#fff" stroke-width="1.500" fill="none"/><rect x="10.500" y="9" width="11.500" height="12" rx="3" fill="#fff" stroke="#d63c7c" stroke-width="1.600"/><path d="M13.500 18l2.800-6.500 2.800 6.500M14.600 16h3.400" stroke="#d63c7c" stroke-width="1.700" fill="none"/></svg><select id="langsel" aria-label="Language / भाषा">
-      <option value="en">English</option><option value="hi">हिन्दी</option><option value="pa">ਪੰਜਾਬੀ</option><option value="mr">मराठी</option><option value="gu">ગુજરાતી</option><option value="ml">മലയാളം</option><option value="te">తెలుగు</option><option value="ta">தமிழ்</option><option value="kn">ಕನ್ನಡ</option><option value="bn">বাংলা</option>
+      <option value="en">EN</option><option value="hi">हिं</option><option value="pa">ਪੰ</option>
     </select>
   </div>
 </div></div>
@@ -984,7 +984,7 @@ window.SG_T=window.SG_T||{};
     try{localStorage.setItem("sg-lang",l)}catch(e){}
   }
   var saved="en"; try{saved=localStorage.getItem("sg-lang")||"en"}catch(e){}
-  if(["en","hi","pa","mr","gu","ml","te","ta","kn","bn"].indexOf(saved)<0) saved="en";
+  if(["en","hi","pa"].indexOf(saved)<0) saved="en";
   setLang(saved);
   document.getElementById("langsel").onchange=function(){setLang(this.value)};
 
@@ -1025,12 +1025,13 @@ window.SG_T=window.SG_T||{};
 < <style>
 :root{--font-display:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,system-ui,sans-serif;--font-body:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,system-ui,sans-serif}body{padding-bottom:80px !important}
 #apptabs{position:fixed;left:0;right:0;bottom:0;z-index:99999;display:flex;background:#fff;border-top:1px solid #f0dbe6;box-shadow:0 -2px 10px rgba(120,80,160,.10);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
-#apptabs a{flex:1;text-align:center;padding:15px 6px;font-size:.86rem;font-weight:700;text-decoration:none;color:#8a7fa5}
+#apptabs a{flex:1;text-align:center;padding:15px 4px;font-size:.78rem;font-weight:700;text-decoration:none;color:#8a7fa5;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 #apptabs a.on{color:#d63c7c;box-shadow:inset 0 3px 0 #d63c7c}
 .wafloat{bottom:82px !important}
 </style>
 <div id="apptabs">
-  <a href="index.html" class="on">Surrogacy Guide</a>
+  <a href="index.html" class="on">Surrogacy</a>
   <a href="donor.html">Egg Donor</a>
+  <a href="contacts.html">My Donors</a>
 </div>/body>
 </html>
