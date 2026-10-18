@@ -3,120 +3,384 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Requests</title>
+<title>My Donors</title>
 <style>
-:root{--pink:#d6337a;--ink:#1b2033;--mut:#8a90a2;--line:#f3dce7;--bg:#fff8fb;--tabs:64px;--amber:#b47b00;--amberL:#fdf4de;--green:#0f7a5c;--greenL:#e3f6ee}
+:root{--pink:#d6337a;--pinkL:#fdeaf3;--ink:#1b2033;--mut:#8a90a2;--line:#f3dce7;--bg:#fff8fb;--tabs:64px;--amber:#b47b00;--amberL:#fdf4de;--green:#0f7a5c;--greenL:#e3f6ee}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.4 -apple-system,"Segoe UI",Roboto,Arial,sans-serif;padding-bottom:calc(var(--tabs) + 20px + env(safe-area-inset-bottom))}
-.top{padding:14px 16px 0;background:#fff;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:10}
-.back{color:var(--pink);font-weight:700;font-size:13.5px;text-decoration:none}
-h1{margin:8px 0 12px;font-size:21px;color:var(--pink)}
-.tabs{display:flex;gap:8px;padding-bottom:12px}
-.tab{border:1.5px solid #eadfe6;background:#fff;color:#6b7280;border-radius:999px;padding:9px 16px;font-weight:700;font-size:13px}
-.tab.on{background:var(--pink);border-color:var(--pink);color:#fff}
-.wrap{padding:12px}
-.req{background:#fff;border:1px solid #f6e7ef;border-radius:16px;padding:15px;margin-bottom:11px}
-.req.acc{border-color:#bfe8d8;background:var(--greenL)}
-.req.dec{opacity:.62}
-.who{font-weight:800}
-.sub{color:var(--mut);font-size:12.5px;margin-top:4px}
-.want{margin-top:10px;background:#fbf7fa;border-radius:12px;padding:11px 13px;font-size:13.5px}
-.req.acc .want{background:rgba(255,255,255,.7)}
-.num{margin-top:6px;font-weight:700;color:var(--ink)}
-.bdg{display:inline-block;font-size:11px;border-radius:999px;padding:3px 10px;font-weight:800;margin-left:7px;vertical-align:middle}
-.bdg.p{background:var(--amberL);color:var(--amber)}
-.bdg.a{background:#fff;color:var(--green);border:1px solid #bfe8d8}
-.bdg.d{background:#f2f2f5;color:#8a90a2}
-.acts{display:flex;gap:9px;margin-top:13px}
-.acts button{flex:1;border:0;border-radius:13px;padding:13px;font-weight:800;font-size:14px}
-.acc-b{background:var(--pink);color:#fff}
-.dec-b{background:#fff;color:#6b7280;border:1.5px solid #e6dfe4 !important}
-.empty{padding:52px 22px;text-align:center;color:var(--mut)}
+html,body{margin:0;padding:0}
+body{background:var(--bg);color:var(--ink);font:15px/1.35 -apple-system,"Segoe UI",Roboto,Arial,sans-serif;padding-bottom:calc(var(--tabs) + 20px + env(safe-area-inset-bottom))}
+.top{padding:14px 16px 0}
+.hrow{display:flex;align-items:center;gap:10px}
+.hrow h1{margin:0;font-size:21px;color:var(--pink)}
+.stat{flex:1;color:var(--mut);font-size:12.5px}
+.selbtn{border:1.5px solid var(--pink);color:var(--pink);background:#fff;border-radius:999px;padding:7px 18px;font-weight:700;font-size:13.5px}
+.selbtn.on{background:var(--pink);color:#fff}
+.reqbar{display:flex;align-items:center;gap:10px;margin:12px 0 0;border-radius:14px;padding:13px 15px;background:#fff;border:1.5px solid var(--line);font-weight:700}
+.reqbar.has{background:var(--amberL);border-color:#f0dca6;color:var(--amber)}
+.reqbar.ok{background:var(--greenL);border-color:#bfe8d8;color:var(--green)}
+.reqbar .dot{width:9px;height:9px;border-radius:50%;background:currentColor;flex:none}
+.reqbar.has .dot{animation:pulse 1.3s infinite}
+@keyframes pulse{0%{opacity:1;transform:scale(1)}50%{opacity:.35;transform:scale(1.5)}100%{opacity:1;transform:scale(1)}}
+.reqbar .go{margin-left:auto;font-size:12.5px;opacity:.75;font-weight:800}
+input[type=search],.inp{width:100%;border:1.5px solid #e9dfe6;background:#fff;border-radius:13px;padding:12px 14px;font-size:15px;color:var(--ink);outline:none}
+input[type=search]:focus,.inp:focus{border-color:var(--pink)}
+.chips{display:flex;flex-wrap:wrap;gap:7px;margin:12px 0 8px}
+.chip{border:1.5px solid #eadfe6;background:#fff;color:#6b7280;border-radius:999px;padding:7px 13px;font-size:12.5px;font-weight:600}
+.chip.on{background:var(--pink);border-color:var(--pink);color:#fff}
+.chip b{font-weight:800;opacity:.6;margin-left:2px}
+.chip.on b{opacity:.85}
+.mcount{color:var(--mut);font-size:12.5px;padding:2px 2px 10px}
+.list{padding:0 12px}
+.card{display:flex;align-items:flex-start;gap:10px;background:#fff;border:1px solid #f6e7ef;border-radius:16px;padding:14px;margin-bottom:10px;box-shadow:0 1px 3px rgba(214,51,122,.05)}
+.card .nm{font-weight:700;font-size:15.5px}
+.card .nu{color:#5a6172;font-size:14px;margin-top:3px}
+.badges{display:flex;gap:6px;margin-top:7px;flex-wrap:wrap}
+.bdg{font-size:11px;border-radius:999px;padding:3px 9px;font-weight:700}
+.bdg.dup{background:#fdf1d6;color:#a07500}
+.bdg.tag{background:var(--pinkL);color:var(--pink)}
+.tagbtn{margin-left:auto;border:0;background:#f6f2f5;color:#5a6172;border-radius:999px;padding:8px 14px;font-size:12.5px;font-weight:700;white-space:nowrap}
+.chk{width:22px;height:22px;border:2px solid #ddd0d9;border-radius:7px;margin-top:3px;display:none;flex:none}
+body.selmode .chk{display:block}
+body.selmode .tagbtn{display:none}
+.chk.on{background:var(--pink);border-color:var(--pink)}
+.empty{padding:40px 20px;text-align:center;color:var(--mut)}
+.scrim{position:fixed;inset:0;background:rgba(25,10,20,.35);opacity:0;pointer-events:none;transition:.2s;z-index:60}
+.scrim.on{opacity:1;pointer-events:auto}
+.sheet{position:fixed;left:0;right:0;bottom:0;background:#fff;border-radius:22px 22px 0 0;max-height:84vh;display:flex;flex-direction:column;transform:translateY(112%);transition:transform .22s ease;z-index:70}
+.sheet.on{transform:none}
+.shead{display:flex;gap:10px;align-items:flex-start;padding:16px 18px 12px;border-bottom:1px solid var(--line);background:#fff;border-radius:22px 22px 0 0}
+.shead .nm{font-size:19px;font-weight:800}
+.shead .nu{color:#5a6172;margin-top:2px}
+.close{margin-left:auto;border:0;background:#f6f2f5;color:#5a6172;border-radius:999px;padding:9px 16px;font-weight:700}
+.sbody{overflow:auto;padding:14px 18px calc(var(--tabs) + 34px + env(safe-area-inset-bottom))}
+.lbl{font-size:12.5px;color:var(--mut);margin:14px 0 6px}
+.hint{font-size:11.5px;color:var(--mut);margin-top:7px;font-style:italic}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+select.sel{width:100%;border:1.5px solid #e9dfe6;border-radius:13px;padding:12px;font-size:14.5px;background:#fff;color:var(--ink);appearance:none;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%238a90a2' stroke-width='3'><path d='M6 9l6 6 6-6'/></svg>");background-repeat:no-repeat;background-position:right 12px center}
+.pchips{display:flex;flex-wrap:wrap;gap:8px}
+.pc{border:1.5px solid #eadfe6;background:#fff;color:#6b7280;border-radius:999px;padding:9px 16px;font-weight:700;font-size:13.5px}
+.pc.on{background:var(--pink);border-color:var(--pink);color:#fff}
+.pc.on:before{content:"✓ "}
+.acts{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:18px}
+.btn{border:0;border-radius:14px;padding:15px;font-size:15px;font-weight:800}
+.btn.p{background:var(--pink);color:#fff}
+.btn.o{background:#fff;color:var(--pink);border:1.5px solid var(--pink)}
+.citypop{position:fixed;left:18px;right:18px;background:#fff;border:1px solid var(--line);border-radius:14px;box-shadow:0 12px 34px rgba(0,0,0,.18);max-height:212px;overflow:auto;z-index:95;display:none}
+.citypop.on{display:block}
+.citypop div{padding:12px 15px;border-bottom:1px solid #f8f0f4}
 .apptabs{position:fixed;left:0;right:0;bottom:0;height:calc(var(--tabs) + env(safe-area-inset-bottom));padding-bottom:env(safe-area-inset-bottom);display:flex;background:#fff;border-top:1px solid var(--line);z-index:55}
 .apptabs a{position:relative;flex:1;display:flex;align-items:center;justify-content:center;color:#9aa0b0;font-weight:700;font-size:13.5px;text-decoration:none}
 .apptabs a.on{color:var(--pink)}
+.apptabs a.on:after{content:"";position:absolute;bottom:0;width:66px;height:3px;background:var(--pink);border-radius:3px}
+.bulkbar{position:fixed;left:12px;right:12px;bottom:calc(var(--tabs) + 10px + env(safe-area-inset-bottom));background:#1b2033;color:#fff;border-radius:16px;padding:11px 12px;display:none;gap:8px;align-items:center;z-index:56;flex-wrap:wrap}
+.bulkbar.on{display:flex}
+.bulkbar b{font-size:13px;margin-right:4px}
+.bulkbar button{border:0;background:rgba(255,255,255,.14);color:#fff;border-radius:999px;padding:8px 12px;font-size:12.5px;font-weight:700}
+.bulkbar button.go{background:var(--pink)}
 </style>
 </head>
 <body>
-
 <div class="top">
-  <a class="back" href="contacts.html">‹ My Donors</a>
-  <h1>Requests</h1>
-  <div class="tabs">
-    <button class="tab on" data-t="in">Incoming</button>
-    <button class="tab" data-t="out">Sent</button>
-  </div>
+<div class="hrow">
+<h1>My Donors</h1>
+<span class="stat" id="stat">loading…</span>
+<button class="selbtn" id="selBtn">Select</button>
 </div>
-<div class="wrap" id="out"></div>
-
+<div class="reqbar" id="reqbar"></div>
+<input id="q" type="search" placeholder="Search name or number" autocomplete="off" style="margin-top:12px">
+<div class="chips" id="chips"></div>
+<div class="mcount" id="mcount"></div>
+</div>
+<div class="list" id="list"></div>
+<div class="scrim" id="scrim"></div>
+<div class="sheet" id="sheet">
+<div class="shead">
+<div style="min-width:0"><div class="nm" id="sName"></div><div class="nu" id="sNum"></div></div>
+<button class="close" id="sClose">Close</button>
+</div>
+<div class="sbody" id="sBody"></div>
+</div>
+<div class="citypop" id="cityPop"></div>
+<div class="bulkbar" id="bulkbar"></div>
 <div class="apptabs">
-  <a href="donor.html">Egg Donor</a>
-  <a href="contacts.html" class="on">My Donors</a>
-  <a href="index.html">Surrogacy</a>
+<a href="donor.html">Egg Donor</a>
+<a href="contacts.html" class="on">My Donors</a>
+<a href="index.html">Surrogacy</a>
 </div>
-
 <script>
-var tab='in';
+var ALL=[],TAGS={},DUP={},SEL={},filter='all',selectMode=false,cur=null,curP=[];
+var PERSONAS=['Donor','Surrogate','Parent','Clinic','Agent'];
+var EXCL=['Parent','Clinic','Agent'];
+var CHIPS=[['all','All'],['untagged','Untagged'],['donors','Donors'],['surrogates','Surrogates'],['parents','Parents'],['clinics','Clinics'],['agents','Agents']];
+var CITIES=["Chandigarh","Mohali","Panchkula","Delhi","Gurgaon","Noida","Greater Noida","Ghaziabad","Faridabad","Mumbai","Thane","Navi Mumbai","Pune","Nashik","Nagpur","Aurangabad","Hyderabad","Warangal","Bengaluru","Mysore","Mangalore","Chennai","Coimbatore","Madurai","Trichy","Salem","Vellore","Kolkata","Howrah","Siliguri","Asansol","Ahmedabad","Surat","Vadodara","Rajkot","Jaipur","Jodhpur","Udaipur","Kota","Ajmer","Bikaner","Lucknow","Kanpur","Varanasi","Agra","Meerut","Prayagraj","Gorakhpur","Indore","Bhopal","Jabalpur","Gwalior","Ujjain","Patna","Ranchi","Jamshedpur","Dhanbad","Raipur","Bilaspur","Bhubaneswar","Guwahati","Kochi","Thrissur","Kozhikode","Ludhiana","Amritsar","Jalandhar","Patiala","Bathinda","Ambala","Karnal","Panipat","Rohtak","Hisar","Dehradun","Shimla","Solan"];
+
+function digits(s){return String(s==null?'':s).replace(/\D/g,'')}
+function keyOf(p){return digits(p).slice(-10)}
+function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
 function ls(k,d){try{var v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}}
 function ss(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
-function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+function loadTags(){TAGS=ls('db.tags',{})||{}}
+function saveTags(){ss('db.tags',TAGS)}
 
-function renderTabs(){
-  document.querySelectorAll('.tab').forEach(function(b){
-    var t=b.getAttribute('data-t');
-    var n = t==='in' ? (ls('db.req.in',[])||[]).filter(function(r){return r.status==='pending'}).length
-                     : Object.keys(ls('db.req.out',{})||{}).length;
-    b.textContent=(t==='in'?'Incoming':'Sent')+(n?' ('+n+')':'');
-    b.classList.toggle('on',t===tab);
-  });
+function loadContacts(){
+var arr=null;
+try{if(window.DB&&window.DB.getContacts){arr=JSON.parse(window.DB.getContacts()||'[]');}}
+catch(e){arr=[{name:'BRIDGE ERROR',phone:String((e&&e.message)||e),err:true}];}
+if(!arr||!arr.length){arr=[{name:'No contacts returned by the bridge',phone:'-',err:true}];}
+ALL=arr.map(function(c){
+var nm=(c.name||c.display||c.displayName||c.full||'').trim();
+var ph='';
+['phone','number','tel','mobile','phoneNumber','tel1','contact'].forEach(function(k){if(!ph&&c[k])ph=String(c[k]).trim();});
+if(!ph)Object.keys(c).forEach(function(k){if(!ph&&/phone|number|mobile|tel/i.test(k))ph=String(c[k]||'').trim();});
+return{name:nm,phone:ph,key:c.key||keyOf(ph),err:!!c.err};
+}).filter(function(c){return c.name||c.phone});
+DUP={};
+ALL.forEach(function(c){if(c.key)DUP[c.key]=(DUP[c.key]||0)+1;});
+}
+
+function pArr(c){var t=TAGS[c.key];if(!t||!t.p)return[];return Array.isArray(t.p)?t.p:[t.p]}
+function hasTag(c,n){return pArr(c).indexOf(n)>=0}
+function countTag(n){return ALL.filter(function(c){return hasTag(c,n)}).length}
+
+function renderReq(){
+var ins=(ls('db.req.in',[])||[]).filter(function(r){return r.status==='pending'});
+var acc=Object.keys(ls('db.req.out',{})||{}).map(function(k){return ls('db.req.out',{})[k]}).filter(function(r){return r.status==='accepted'});
+var bar=document.getElementById('reqbar');
+if(ins.length){
+bar.className='reqbar has';
+bar.innerHTML='<span class="dot"></span><span>'+ins.length+' request'+(ins.length>1?'s':'')+' waiting for you</span><span class="go">Open ›</span>';
+}else if(acc.length){
+bar.className='reqbar ok';
+bar.innerHTML='<span class="dot"></span><span>'+acc.length+' request'+(acc.length>1?'s':'')+' accepted</span><span class="go">Open ›</span>';
+}else{
+bar.className='reqbar';
+bar.innerHTML='<span>Requests</span><span class="go">None yet ›</span>';
+}
+}
+
+function renderChips(){
+document.getElementById('chips').innerHTML=CHIPS.map(function(c){
+var n=c[0]==='all' ? ALL.length : c[0]==='untagged' ? ALL.filter(function(x){return !pArr(x).length}).length : countTag(c[1].slice(0,-1));
+return '<button class="chip'+(filter===c[0]?' on':'')+'" data-f="'+c[0]+'">'+c[1]+'<b>('+n+')</b></button>';
+}).join('');
 }
 
 function render(){
-  renderTabs();
-  var o=document.getElementById('out');
-  if(tab==='in'){
-    var ins=ls('db.req.in',[])||[];
-    if(!ins.length){ o.innerHTML='<div class="empty">No incoming requests yet.<br><br>When another agent taps one of your donors, it lands here.</div>'; return; }
-    o.innerHTML=ins.map(function(r,i){
-      var st=r.status;
-      return '<div class="req '+(st==='accepted'?'acc':st==='declined'?'dec':'')+'">'
-        +'<div class="who">'+esc(r.fromName)+(st==='pending'?'<span class="bdg p">Waiting</span>':st==='accepted'?'<span class="bdg a">Accepted</span>':'<span class="bdg d">Declined</span>')+'</div>'
-        +'<div class="sub">'+esc(r.fromCity||'')+' · has about '+esc(r.fromBook||'?')+' donors</div>'
-        +'<div class="want">wants <b>'+esc(r.donorName)+'</b>'+(st==='accepted'?'<div class="num">'+esc(r.donorPhone||'no number')+'</div>':'')+'</div>'
-        +(st==='pending'?'<div class="acts"><button class="acc-b" data-acc="'+i+'">Accept and reveal</button><button class="dec-b" data-dec="'+i+'">Decline</button></div>':'')
-        +'</div>';
-    }).join('');
-  } else {
-    var out=ls('db.req.out',{})||{};
-    var keys=Object.keys(out);
-    if(!keys.length){ o.innerHTML='<div class="empty">You have not requested anyone yet.<br><br>Open a listing from the Egg Donor page and tap Request.</div>'; return; }
-    keys.sort(function(a,b){return (out[b].at||0)-(out[a].at||0)});
-    o.innerHTML=keys.map(function(k){
-      var r=out[k], st=r.status||'pending';
-      return '<div class="req '+(st==='accepted'?'acc':'')+'">'
-        +'<div class="who">'+esc(r.name)+(st==='accepted'?'<span class="bdg a">Accepted</span>':'<span class="bdg p">Pending</span>')+'</div>'
-        +'<div class="sub">'+esc(r.city||'')+(r.age?' · '+esc(r.age)+' yrs':'')+' · '+esc(r.type||'')+'</div>'
-        +(st==='accepted'
-          ? '<div class="want">Contact details released<div class="num">'+esc(r.phone||'')+'</div></div>'
-          : '<div class="want">Waiting for a response. Sample listings stay pending — the verified ones answer.</div>')
-        +'</div>';
-    }).join('');
-  }
+var q=(document.getElementById('q').value||'').trim().toLowerCase();
+var qd=digits(q);
+var out=ALL.filter(function(c){
+if(filter==='untagged'){if(pArr(c).length)return false;}
+else if(filter!=='all'){if(!hasTag(c,filter.slice(0,-1).charAt(0).toUpperCase()+filter.slice(0,-1).slice(1)))return false;}
+if(!q)return true;
+if((c.name||'').toLowerCase().indexOf(q)>=0)return true;
+if(qd.length>=2&&digits(c.phone).indexOf(qd)>=0)return true;
+return false;
+});
+var h='';
+out.forEach(function(c){
+var t=TAGS[c.key]||{},p=pArr(c);
+var ph=c.phone?esc(c.phone):'<span style="color:#c3c8d2">no number</span>';
+var bd='';
+if(DUP[c.key]>1)bd+='<span class="bdg dup">'+(DUP[c.key]-1)+' duplicate</span>';
+p.forEach(function(x){bd+='<span class="bdg tag">'+esc(x)+'</span>';});
+h+='<div class="card" data-key="'+esc(c.key)+'">'
++'<div class="chk'+(SEL[c.key]?' on':'')+'"></div>'
++'<div style="flex:1;min-width:0"><div class="nm">'+esc(c.name||'(no name)')+'</div><div class="nu">'+ph+'</div>'
++(bd?'<div class="badges">'+bd+'</div>':'')+'</div>'
++'<button class="tagbtn">'+(p.length?'Edit':'Set tag')+'</button></div>';
+});
+document.getElementById('list').innerHTML=h||'<div class="empty">Nothing here yet.</div>';
+document.getElementById('mcount').textContent=out.length+' people matching';
+document.getElementById('stat').textContent=ALL.length+' contacts · '+Object.keys(TAGS).length+' tagged · '+countTag('Donor')+' donors';
+renderChips();renderReq();
 }
-document.querySelector('.tabs').addEventListener('click',function(e){
-  var b=e.target.closest('.tab'); if(!b) return;
-  tab=b.getAttribute('data-t'); render();
+
+document.getElementById('q').addEventListener('input',render);
+document.getElementById('chips').addEventListener('click',function(e){
+var b=e.target.closest('.chip');if(!b)return;
+filter=b.getAttribute('data-f');render();
 });
-document.getElementById('out').addEventListener('click',function(e){
-  var a=e.target.closest('[data-acc]'), d=e.target.closest('[data-dec]');
-  if(!a&&!d) return;
-  var ins=ls('db.req.in',[])||[];
-  var i=parseInt((a||d).getAttribute(a?'data-acc':'data-dec'),10);
-  if(!ins[i]) return;
-  ins[i].status = a ? 'accepted' : 'declined';
-  ss('db.req.in',ins); render();
+document.getElementById('reqbar').onclick=function(){location.href='requests.html';};
+document.getElementById('list').addEventListener('click',function(e){
+var card=e.target.closest('.card');if(!card)return;
+var k=card.getAttribute('data-key');
+var c=ALL.filter(function(x){return x.key===k})[0];if(!c)return;
+if(selectMode){toggleSel(k);return;}
+openSheet(c);
 });
-render();
+document.getElementById('selBtn').onclick=function(){
+selectMode=!selectMode;SEL={};
+document.body.classList.toggle('selmode',selectMode);
+this.classList.toggle('on',selectMode);
+this.textContent=selectMode?'Cancel':'Select';
+renderBulk();render();
+};
+
+function toggleSel(k){if(SEL[k])delete SEL[k];else SEL[k]=1;renderBulk();render();}
+
+function renderBulk(){
+var n=Object.keys(SEL).length,bar=document.getElementById('bulkbar');
+if(!selectMode||!n){bar.classList.remove('on');bar.innerHTML='';return;}
+bar.innerHTML='<b>'+n+' selected</b>'
++PERSONAS.map(function(p){return '<button data-bp="'+p+'">'+p+'</button>'}).join('')
++'<button class="go" data-bs="1">Share</button>';
+bar.classList.add('on');
+}
+
+function applyPersona(key,p){
+var t=TAGS[key]||{},a=(Array.isArray(t.p)?t.p.slice():(t.p?[t.p]:[]));
+var i=a.indexOf(p);
+if(i>=0){a.splice(i,1);}
+else{
+if(EXCL.indexOf(p)>=0)a=a.filter(function(x){return EXCL.indexOf(x)<0});
+a.push(p);
+}
+t.p=a;
+if(a.length||t.age||t.bg||t.ht||t.city||t.note)TAGS[key]=t;else delete TAGS[key];
+}
+
+document.getElementById('bulkbar').addEventListener('click',function(e){
+var b=e.target.closest('button');if(!b)return;
+var keys=Object.keys(SEL);if(!keys.length)return;
+if(b.getAttribute('data-bs')){
+share(keys.map(function(k){
+var c=ALL.filter(function(x){return x.key===k})[0]||{};
+return (c.name||'')+' — '+(c.phone||'');
+}).join('\n'));
+}else{
+var p=b.getAttribute('data-bp');
+keys.forEach(function(k){applyPersona(k,p);});
+saveTags();render();
+}
+});
+
+function sel(id,opts,val){
+return '<select class="sel" id="'+id+'"><option value="">—</option>'
++opts.map(function(o){return '<option'+(o===val?' selected':'')+'>'+o+'</option>'}).join('')+'</select>';
+}
+
+var AGES=[],BGS=['A+','A-','B+','B-','O+','O-','AB+','AB-'],HTS=[];
+for(var a=18;a<=45;a++)AGES.push(String(a));
+for(var f=4;f<=5;f++)for(var i=0;i<12;i++)HTS.push(f+"'"+i+'"');
+
+function openSheet(c){
+cur=c;var t=TAGS[c.key]||{};curP=pArr(c);
+document.getElementById('sName').textContent=c.name||'(no name)';
+document.getElementById('sNum').textContent=c.phone||'no number';
+document.getElementById('sBody').innerHTML=
+'<div class="lbl">Type</div><div class="pchips" id="pchips">'
++PERSONAS.map(function(p){return '<button class="pc'+(curP.indexOf(p)>=0?' on':'')+'" data-p="'+p+'">'+p+'</button>'}).join('')+'</div>'
++'<div class="hint">A donor can also be a surrogate — tick both. Parent, Clinic and Agent are one at a time.</div>'
++'<div class="grid2"><div><div class="lbl">Age</div>'+sel('fAge',AGES,t.age)+'</div>'
++'<div><div class="lbl">Blood group</div>'+sel('fBg',BGS,t.bg)+'</div></div>'
++'<div class="grid2"><div><div class="lbl">Height</div>'+sel('fHt',HTS,t.ht)+'</div>'
++'<div><div class="lbl">City</div><input class="inp" id="fCity" placeholder="Type a city" value="'+esc(t.city||'')+'" autocomplete="off"></div></div>'
++'<div class="lbl">Note</div><input class="inp" id="fNote" placeholder="Anything useful" value="'+esc(t.note||'')+'">'
++'<div class="acts"><button class="btn p" id="waBtn">Share on WhatsApp</button><button class="btn o" id="cpBtn">Copy</button></div>';
+document.getElementById('sBody').scrollTop=0;
+document.getElementById('scrim').classList.add('on');
+document.getElementById('sheet').classList.add('on');
+wireSheet();
+}
+
+function val(id){var e=document.getElementById(id);return e?e.value:''}
+
+function persist(){
+if(!cur)return;
+var t=TAGS[cur.key]||{};
+t.p=curP.slice();t.age=val('fAge');t.bg=val('fBg');t.ht=val('fHt');t.city=val('fCity');t.note=val('fNote');
+if(t.p.length||t.age||t.bg||t.ht||t.city||t.note)TAGS[cur.key]=t;else delete TAGS[cur.key];
+saveTags();render();
+}
+
+function wireSheet(){
+document.querySelectorAll('#pchips .pc').forEach(function(b){
+b.onclick=function(){
+var p=b.getAttribute('data-p'),i=curP.indexOf(p);
+if(i>=0){curP.splice(i,1);b.classList.remove('on');}
+else{
+if(EXCL.indexOf(p)>=0){
+curP=curP.filter(function(x){return EXCL.indexOf(x)<0});
+document.querySelectorAll('#pchips .pc').forEach(function(x){if(EXCL.indexOf(x.getAttribute('data-p'))>=0)x.classList.remove('on');});
+}
+curP.push(p);b.classList.add('on');
+}
+persist();
+};
+});
+['fAge','fBg','fHt'].forEach(function(id){var e=document.getElementById(id);if(e)e.onchange=persist});
+var n=document.getElementById('fNote');if(n)n.onchange=persist;
+var ci=document.getElementById('fCity');
+if(ci){ci.oninput=function(){persist();cityShow()};ci.onfocus=cityShow;ci.onchange=persist;}
+document.getElementById('waBtn').onclick=function(){share(shareText())};
+document.getElementById('cpBtn').onclick=function(){copy(shareText())};
+}
+
+function shareText(){
+var t=TAGS[cur.key]||{},L=[];
+L.push('*'+(cur.name||'')+'*');
+if(cur.phone)L.push('Number: '+cur.phone);
+if(t.p&&t.p.length)L.push('Type: '+t.p.join(' / '));
+if(t.age)L.push('Age: '+t.age);
+if(t.bg)L.push('Blood group: '+t.bg);
+if(t.ht)L.push('Height: '+t.ht);
+if(t.city)L.push('City: '+t.city);
+if(t.note)L.push('Note: '+t.note);
+return L.join('\n');
+}
+
+function share(txt){window.open('https://wa.me/?text='+encodeURIComponent(txt),'_blank');}
+function copy(txt){
+try{
+var ta=document.createElement('textarea');
+ta.value=txt;ta.style.position='fixed';ta.style.opacity=0;
+document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);
+}catch(e){}
+}
+
+function closeSheet(){
+persist();
+document.getElementById('scrim').classList.remove('on');
+document.getElementById('sheet').classList.remove('on');
+document.getElementById('cityPop').classList.remove('on');
+}
+document.getElementById('sClose').onclick=closeSheet;
+document.getElementById('scrim').onclick=closeSheet;
+
+function cityShow(){
+var inp=document.getElementById('fCity');if(!inp)return;
+var pop=document.getElementById('cityPop');
+var q=(inp.value||'').trim().toLowerCase();
+var r=inp.getBoundingClientRect();
+pop.style.top=Math.max(70,Math.min(r.bottom+6,window.innerHeight-230))+'px';
+var hits=CITIES.filter(function(c){return !q||c.toLowerCase().indexOf(q)>=0}).slice(0,60);
+pop.innerHTML=hits.map(function(c){return '<div>'+c+'</div>'}).join('')||'<div>No match</div>';
+pop.classList.add('on');
+}
+
+document.getElementById('cityPop').addEventListener('click',function(e){
+var d=e.target.closest('div');if(!d)return;
+var inp=document.getElementById('fCity');
+if(inp&&d.textContent!=='No match'){inp.value=d.textContent;persist();}
+document.getElementById('cityPop').classList.remove('on');
+});
+
+document.addEventListener('click',function(e){
+if(e.target.id!=='fCity'&&!e.target.closest('#cityPop'))document.getElementById('cityPop').classList.remove('on');
+});
+
+function seedIncoming(){
+if(ls('db.req.seeded',0)||ALL.length<6)return;
+var names=['Ravi Sharma','Priya Mehra'],cities=['Chandigarh','Delhi'];
+var ins=[0,4].map(function(i,ix){
+var c=ALL[i];
+return{id:'in'+(ix+1),fromName:names[ix],fromCity:cities[ix],fromBook:180+ix*70,
+donorKey:c.key,donorName:c.name||'your donor',donorPhone:c.phone,at:Date.now()-(ix+1)*3600000,status:'pending'};
+});
+ss('db.req.in',ins);ss('db.req.seeded',1);
+}
+
+loadTags();loadContacts();seedIncoming();render();
 </script>
 </body>
 </html>
