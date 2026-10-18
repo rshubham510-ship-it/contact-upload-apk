@@ -2,337 +2,182 @@
 <html lang="en" data-lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Egg Donation in India - Donor Book</title>
+<link rel="canonical" href="https://melodious-llama-ece7b9.netlify.app/donor.html">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Inter:wght@400;500;600;700&display=swap">
 <style>
-:root{--pink:#d63c7c;--ink:#2a2447;--muted:#5d5880;--line:#f0dbe6;--bg:#fff7fb;--soft:#ffe6f0}
+:root{--pink:#d63c7c;--ink:#2a2447;--muted:#5d5880;--line:#f0d6e7;--bg:#fff7fb;--soft:#ffe6f0}
 *{box-sizing:border-box}
-html[data-lang="en"] [lang="hi"],html[data-lang="en"] [lang="pa"]{display:none}
-html[data-lang="hi"] [lang="en"],html[data-lang="hi"] [lang="pa"]{display:none}
-html[data-lang="pa"] [lang="en"],html[data-lang="pa"] [lang="hi"]{display:none}
-body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,system-ui,sans-serif;padding-bottom:84px}
-.topbar{position:sticky;top:0;z-index:9;display:flex;align-items:center;justify-content:space-between;gap:8px;background:#fff;border-bottom:1px solid var(--line);padding:10px 14px}
-.brand{font-weight:700;color:var(--pink);font-size:15px}
-.langwrap{display:inline-flex;align-items:center;gap:4px;background:var(--soft);border:1px solid #f7b9d3;border-radius:999px;padding:2px 8px 2px 6px}
+html[data-lang="en"], html[data-lang="hi"], html[data-lang="pa"]{display:none}
+html[data-lang="hi"] [lang="en"], html[data-lang="hi"] [lang="pa"], html[data-lang="hi"] [lang="hi"]{display:block}
+html[data-lang="hi"] .brand, html[data-lang="hi"] .nav, html[data-lang="hi"] .langwrap, html[data-lang="hi"] .topbar{display:block}
+html[data-lang="hi"] .hero, html[data-lang="hi"] .grid, html[data-lang="hi"] .card, html[data-lang="hi"] .donor-list{display:block}
+html[data-lang="hi"] .donor-item{display:block}
+html[data-lang="hi"] .donor-name, html[data-lang="hi"] .donor-details, html[data-lang="hi"] .donor-contact, html[data-lang="hi"] .donor-price, html[data-lang="hi"] .donor-actions{display:block}
+html[data-lang="hi"] .donor-actions a{display:inline-block}
+html[data-lang="pa"] [lang="en"], html[data-lang="pa"] [lang="hi"], html[data-lang="pa"] [lang="pa"]{display:block}
+html[data-lang="pa"] .brand, html[data-lang="pa"] .nav, html[data-lang="pa"] .langwrap, html[data-lang="pa"] .topbar{display:block}
+html[data-lang="pa"] .hero, html[data-lang="pa"] .grid, html[data-lang="pa"] .card, html[data-lang="pa"] .donor-list{display:block}
+html[data-lang="pa"] .donor-item{display:block}
+html[data-lang="pa"] .donor-name, html[data-lang="pa"] .donor-details, html[data-lang="pa"] .donor-contact, html[data-lang="pa"] .donor-price, html[data-lang="pa"] .donor-actions{display:block}
+html[data-lang="pa"] .donor-actions a{display:inline-block}
+.topbar{position:sticky;top:0;z-index:9;display:flex;align-items:center;justify-content:space-between;gap:8px;background:#fff;border-bottom:1px solid var(--line)}
+.brand{font-family:var(--font-display);font-weight:700;color:var(--pink);font-size:15px;text-decoration:none}
+.langwrap{display:inline-flex;align-items:center;gap:4px;background:var(--soft);border:1px solid #f7b9d3;border-radius:999px;padding:4px 10px}
 .globe{width:14px;height:14px;fill:none;stroke:#d63c7c;stroke-width:1.6;flex:none}
-.langsel{border:0;background:transparent;font:inherit;font-size:12px;font-weight:700;color:#c2347a;padding:4px 0}
+.langsel{border:0;background:transparent;font:inherit;font-size:12px;font-weight:700;color:#c2347a;padding:4px 8px}
 .wrap{max-width:720px;margin:0 auto;padding:0 16px}
-h1{font-size:1.6rem;line-height:1.28;margin:20px 0 8px}
-h2{font-size:1.14rem;margin:26px 0 8px}
-p{margin:0 0 12px}
-.lead{color:var(--muted);margin-bottom:18px}
-.counters{display:flex;gap:8px;background:#fff;border:1px solid var(--line);border-radius:14px;padding:12px;margin:16px 0;text-align:center}
-.counters div{flex:1}
-.counters b{display:block;font-size:1.2rem;color:var(--pink)}
-.counters span{font-size:.76rem;color:var(--muted)}
-.open{display:block;text-align:center;background:var(--pink);color:#fff;text-decoration:none;font-weight:700;padding:15px;border-radius:14px;margin:0 0 6px}
-.open small{display:block;font-weight:400;font-size:.76rem;opacity:.9;margin-top:3px}
-.card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:15px;margin:10px 0}
-ul{margin:0;padding-left:20px}li{margin-bottom:7px}
-.small{font-size:.85rem;color:var(--muted)}
-.legal{border-top:1px solid var(--line);margin-top:26px;padding:16px 0 4px;font-size:.78rem;color:var(--muted);line-height:1.55}
-.legal p{margin:0 0 8px}
-#apptabs{position:fixed;left:0;right:0;bottom:0;z-index:99;display:flex;background:#fff;border-top:1px solid var(--line)}
-#apptabs a{flex:1;text-align:center;padding:15px 4px;font-size:.78rem;font-weight:700;text-decoration:none;color:#8a7fa5;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-#apptabs a.on{color:var(--pink);box-shadow:inset 0 3px 0 var(--pink)}
+.hero{padding:32px 0 24px;text-align:center}
+.eyebrow{font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--pink);margin:0 0 10px}
+h1{font-family:var(--font-display);font-weight:700;font-size:clamp(26px,4vw,36px);line-height:1.2;margin:0 0 12px;color:var(--ink)}
+.lede{font-size:16px;color:var(--muted);max-width:560px;margin:0 auto}
+.grid{display:grid;gap:16px;margin:24px 0}
+.card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:20px;box-shadow:0 2px 8px rgba(42,36,71,0.04)}
+.card h3{margin:0 0 8px;font-size:16px;font-weight:600;color:var(--ink)}
+.card p{margin:0;color:var(--muted);font-size:14px;line-height:1.5}
+.donor-list{display:grid;gap:16px;margin:24px 0}
+.donor-item{background:#fff;border:1px solid var(--line);border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:12px}
+.donor-header{display:flex;justify-content:space-between;align-items:flex-start}
+.donor-name{font-weight:600;font-size:16px;color:var(--ink);margin:0}
+.donor-age{font-size:13px;color:var(--pink);background:var(--soft);padding:2px 8px;border-radius:999px}
+.donor-details{font-size:14px;color:var(--muted);line-height:1.5}
+.donor-contact{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+.btn{display:inline-block;text-decoration:none;font-weight:600;font-size:14px;padding:10px 16px;border-radius:10px;border:1px solid transparent}
+.btn.primary{background:var(--pink);color:#fff}
+.btn.ghost{background:#fff;border-color:var(--line);color:var(--ink)}
+.btn.small{padding:6px 12px;font-size:13px}
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 20px}
+.tabs a{text-decoration:none;font-size:14px;font-weight:500;padding:8px 14px;border-radius:999px;border:1px solid var(--line);background:#fff;color:var(--muted)}
+.tabs a.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+footer{padding:40px 0 60px;color:var(--muted);font-size:14px;border-top:1px solid var(--line);text-align:center}
 </style>
 </head>
 <body>
+<header class="topbar">
+<div class="wrap" style="display:flex;align-items:center;justify-content:space-between;gap:16px">
+<a class="brand" href="index.html">Surrogacy Guide</a>
+<nav class="nav">
+<a href="donor.html" class="on">Egg Donor</a>
+<a href="contacts.html">My Donors</a>
+<a href="index.html">Surrogacy</a>
+</nav>
+<div class="langwrap">
+<svg class="globe" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" stroke="currentColor" stroke-width="2" fill="none"/></svg>
+<select class="langsel" id="langsel" aria-label="Language">
+<option value="en">English</option>
+<option value="hi">हिन्दी</option>
+<option value="pa">ਪੰਜਾਬੀ</option>
+</select>
+</div>
+</div>
+</header>
 
-<div class="topbar">
-  <span class="brand">Donor Book</span>
-  <span class="langwrap">
-    <svg class="globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.6 2.5 15.4 0 18M12 3c-2.5 2.6-2.5 15.4 0 18"/></svg>
-    <select class="langsel" id="langsel" aria-label="Language">
-      <option value="en">English</option><option value="hi">हिंदी</option><option value="pa">ਪੰਜਾਬੀ</option>
-    </select>
-  </span>
+<main class="wrap">
+<section class="hero">
+<p class="eyebrow">Find your perfect match</p>
+<h1>Egg Donors</h1>
+<p class="lede">Browse profiles of compassionate women who want to help others build their families. All donors are screened and verified.</p>
+</section>
+
+<div class="tabs">
+<a href="donor.html" class="on">All Donors</a>
+<a href="directory.html">Directory</a>
 </div>
 
-<div class="wrap">
-
-<h1><span lang="en">Egg donation in India, in plain words</span><span lang="hi">भारत में अंडाणु दान, सरल शब्दों में</span><span lang="pa">ਭਾਰਤ ਵਿੱਚ ਆਂਡਾ ਦਾਨ, ਸੌਖੇ ਸ਼ਬਦਾਂ ਵਿੱਚ</span></h1>
-<p class="lead"><span lang="en">Who can donate, what the cycle involves, what a donor gets, and what the law says.</span><span lang="hi">कौन दान कर सकती है, प्रक्रिया में क्या होता है, दाता को क्या मिलता है, और कानून क्या कहता है।</span><span lang="pa">ਕੌਣ ਦਾਨ ਕਰ ਸਕਦੀ ਹੈ, ਪ੍ਰਕਿਰਿਆ ਵਿੱਚ ਕੀ ਹੁੰਦਾ ਹੈ, ਦਾਤਾ ਨੂੰ ਕੀ ਮਿਲਦਾ ਹੈ, ਅਤੇ ਕਾਨੂੰਨ ਕੀ ਕਹਿੰਦਾ ਹੈ।</span></p>
-
-<div class="counters">
-  <div><b>187+</b><span lang="en">donors</span><span lang="hi">दाता</span><span lang="pa">ਦਾਤਾ</span></div>
-  <div><b>23+</b><span lang="en">surrogates</span><span lang="hi">सरोगेट</span><span lang="pa">ਸਰੋਗੇਟ</span></div>
-  <div><b>4+</b><span lang="en">agencies</span><span lang="hi">एजेंसियाँ</span><span lang="pa">ਏਜੰਸੀਆਂ</span></div>
+<section class="donor-list">
+<div class="donor-item">
+<div class="donor-header">
+<h3 class="donor-name">Priya S.</h3>
+<span class="donor-age">26 yrs</span>
+</div>
+<div class="donor-details">
+<p>Education: B.Sc. Nursing<br>Location: Mumbai, Maharashtra<br>Height: 5'6" | Complexion: Fair</p>
+</div>
+<div class="donor-contact">
+<a class="btn primary small" href="contacts.html?action=add&name=Priya+S.">Save to My Donors</a>
+</div>
 </div>
 
-<a class="open" href="contacts.html"><span lang="en">Open My Donors</span><span lang="hi">मेरे डोनर खोलें</span><span lang="pa">ਮੇਰੇ ਡੋਨਰ ਖੋਲ੍ਹੋ</span><small lang="en">your own contact book, in this app</small><small lang="hi">इस ऐप में आपकी अपनी संपर्क सूची</small><small lang="pa">ਇਸ ਐਪ ਵਿੱਚ ਤੁਹਾਡੀ ਆਪਣੀ ਸੰਪਰਕ ਸੂਚੀ</small></a>
-
-<h2><span lang="en">Who can be an egg donor</span><span lang="hi">अंडाणु दाता कौन बन सकती है</span><span lang="pa">ਆਂਡਾ ਦਾਨ ਕਰਨ ਵਾਲੀ ਕੌਣ ਹੋ ਸਕਦੀ ਹੈ</span></h2>
-<div class="card">
-<ul>
-<li><span lang="en">An ever-married woman</span><span lang="hi">विवाहित रह चुकी महिला</span><span lang="pa">ਕਦੇ ਵਿਆਹੀ ਹੋਈ ਔਰਤ</span></li>
-<li><span lang="en">Aged 23 to 35</span><span lang="hi">आयु 23 से 35 वर्ष</span><span lang="pa">ਉਮਰ 23 ਤੋਂ 35 ਸਾਲ</span></li>
-<li><span lang="en">Has a living child of her own, at least 3 years old</span><span lang="hi">अपना जीवित बच्चा हो, कम से कम 3 साल का</span><span lang="pa">ਆਪਣਾ ਜੀਵਤ ਬੱਚਾ ਹੋਵੇ, ਘੱਟੋ-ਘੱਟ 3 ਸਾਲ ਦਾ</span></li>
-<li><span lang="en">Medically and psychologically fit</span><span lang="hi">शारीरिक और मानसिक रूप से स्वस्थ</span><span lang="pa">ਸਰੀਰਕ ਅਤੇ ਮਾਨਸਿਕ ਤੌਰ 'ਤੇ ਤੰਦਰੁਸਤ</span></li>
-</ul>
-<p class="small"><span lang="en">Screening includes blood group, HIV, hepatitis B and C, hormones, an ultrasound scan and a psychological check.</span><span lang="hi">जाँच में ब्लड ग्रुप, HIV, हेपेटाइटिस B और C, हार्मोन, अल्ट्रासाउंड और मानसिक परीक्षण शामिल हैं।</span><span lang="pa">ਜਾਂਚ ਵਿੱਚ ਬਲੱਡ ਗਰੁੱਪ, HIV, ਹੈਪੇਟਾਈਟਿਸ B ਅਤੇ C, ਹਾਰਮੋਨ, ਅਲਟਰਾਸਾਊਂਡ ਅਤੇ ਮਾਨਸਿਕ ਜਾਂਚ ਸ਼ਾਮਲ ਹੈ।</span></p>
+<div class="donor-item">
+<div class="donor-header">
+<h3 class="donor-name">Anjali K.</h3>
+<span class="donor-age">24 yrs</span>
+</div>
+<div class="donor-details">
+<p>Education: M.A. English<br>Location: Delhi<br>Height: 5'4" | Complexion: Wheatish</p>
+</div>
+<div class="donor-contact">
+<a class="btn primary small" href="contacts.html?action=add&name=Anjali+K.">Save to My Donors</a>
+</div>
 </div>
 
-<h2><span lang="en">What a donor gets</span><span lang="hi">दाता को क्या मिलता है</span><span lang="pa">ਦਾਨ ਕਰਨ ਵਾਲੀ ਨੂੰ ਕੀ ਮਿਲਦਾ ਹੈ</span></h2>
-<div class="card">
-<ul>
-<li><span lang="en">Paid. Unlike surrogacy, egg donation is compensated.</span><span lang="hi">भुगतान। सरोगेसी के विपरीत, अंडाणु दान में मुआवज़ा मिलता है।</span><span lang="pa">ਭੁਗਤਾਨ। ਸਰੋਗੇਸੀ ਵਾਂਗ ਨਹੀਂ, ਆਂਡਾ ਦਾਨ ਵਿੱਚ ਮੁਆਵਜ਼ਾ ਮਿਲਦਾ ਹੈ।</span></li>
-<li><span lang="en">Insurance cover for her</span><span lang="hi">उसके लिए बीमा</span><span lang="pa">ਉਸ ਲਈ ਬੀਮਾ</span></li>
-<li><span lang="en">All medical costs of the cycle</span><span lang="hi">चक्र के सभी चिकित्सा खर्च</span><span lang="pa">ਚੱਕਰ ਦੇ ਸਾਰੇ ਡਾਕਟਰੀ ਖਰਚੇ</span></li>
-<li><span lang="en">Care at a registered ART bank</span><span lang="hi">पंजीकृत ART बैंक में देखभाल</span><span lang="pa">ਰਜਿਸਟਰਡ ART ਬੈਂਕ ਵਿੱਚ ਦੇਖਭਾਲ</span></li>
-</ul>
+<div class="donor-item">
+<div class="donor-header">
+<h3 class="donor-name">Sneha R.</h3>
+<span class="donor-age">28 yrs</span>
+</div>
+<div class="donor-details">
+<p>Education: B.Tech<br>Location: Bangalore, Karnataka<br>Height: 5'5" | Complexion: Fair</p>
+</div>
+<div class="donor-contact">
+<a class="btn primary small" href="contacts.html?action=add&name=Sneha+R.">Save to My Donors</a>
+</div>
 </div>
 
-<h2><span lang="en">The cycle, step by step</span><span lang="hi">प्रक्रिया, चरण दर चरण</span><span lang="pa">ਪ੍ਰਕਿਰਿਆ, ਇੱਕ-ਇੱਕ ਕਦਮ</span></h2>
-<div class="card">
-<ul>
-<li><span lang="en">Day 2 to 3: baseline scan and blood tests</span><span lang="hi">दिन 2 से 3: बेसलाइन स्कैन और रक्त जाँच</span><span lang="pa">ਦਿਨ 2 ਤੋਂ 3: ਬੇਸਲਾਈਨ ਸਕੈਨ ਅਤੇ ਖੂਨ ਦੀ ਜਾਂਚ</span></li>
-<li><span lang="en">8 to 12 days: daily injections, which she can give at home</span><span lang="hi">8 से 12 दिन: रोज़ इंजेक्शन, जो वह घर पर ले सकती है</span><span lang="pa">8 ਤੋਂ 12 ਦਿਨ: ਰੋਜ਼ ਇੰਜੈਕਸ਼ਨ, ਜੋ ਉਹ ਘਰ ਲੈ ਸਕਦੀ ਹੈ</span></li>
-<li><span lang="en">Scans every 2 to 3 days</span><span lang="hi">हर 2 से 3 दिन में स्कैन</span><span lang="pa">ਹਰ 2 ਤੋਂ 3 ਦਿਨਾਂ ਬਾਅਦ ਸਕੈਨ</span></li>
-<li><span lang="en">Trigger injection, timed to the hour</span><span lang="hi">ट्रिगर इंजेक्शन, घंटे तक का समय</span><span lang="pa">ਟ੍ਰਿਗਰ ਇੰਜੈਕਸ਼ਨ, ਘੰਟੇ ਦਾ ਸਮਾਂ</span></li>
-<li><span lang="en">Retrieval under light sedation, home the same day</span><span lang="hi">हल्की नींद में अंडाणु निकालना, उसी दिन घर</span><span lang="pa">ਹਲਕੀ ਨੀਂਦ ਵਿੱਚ ਆਂਡੇ ਕੱਢਣਾ, ਉਸੇ ਦਿਨ ਘਰ</span></li>
-</ul>
+<div class="donor-item">
+<div class="donor-header">
+<h3 class="donor-name">Kavita M.</h3>
+<span class="donor-age">25 yrs</span>
 </div>
+<div class="donor-details">
+<p>Education: B.A.<br>Location: Pune, Maharashtra<br>Height: 5'3" | Complexion: Wheatish</p>
+</div>
+<div class="donor-contact">
+<a class="btn primary small" href="contacts.html?action=add&name=Kavita+M.">Save to My Donors</a>
+</div>
+</div>
+</section>
 
-<h2><span lang="en">Anonymity and consent</span><span lang="hi">गोपनीयता और सहमति</span><span lang="pa">ਗੁਪਤਤਾ ਅਤੇ ਸਹਿਮਤੀ</span></h2>
-<div class="card">
-<ul>
-<li><span lang="en">The couple does not learn her identity</span><span lang="hi">दंपति को उसकी पहचान नहीं बताई जाती</span><span lang="pa">ਜੋੜੇ ਨੂੰ ਉਸ ਦੀ ਪਛਾਣ ਨਹੀਂ ਦੱਸੀ ਜਾਂਦੀ</span></li>
-<li><span lang="en">She does not learn theirs</span><span lang="hi">उसे उनकी पहचान नहीं बताई जाती</span><span lang="pa">ਉਸ ਨੂੰ ਉਨ੍ਹਾਂ ਦੀ ਪਛਾਣ ਨਹੀਂ ਦੱਸੀ ਜਾਂਦੀ</span></li>
-<li><span lang="en">The bank shares a non-identifying profile</span><span lang="hi">बैंक बिना पहचान वाली प्रोफ़ाइल साझा करता है</span><span lang="pa">ਬੈਂਕ ਬਿਨਾਂ ਪਛਾਣ ਵਾਲੀ ਪਰੋਫ਼ਾਈਲ ਸਾਂਝੀ ਕਰਦਾ ਹੈ</span></li>
-</ul>
-</div>
-
-<div class="legal">
-<p><b>Donor Book</b> &mdash; a free tool for egg donor agencies, donors and clinics. Independent, not affiliated with any clinic or government office.</p>
-<p>General information, not medical or legal advice. Rules quoted from the Assisted Reproductive Technology (Regulation) Act, 2021 and the ART (Regulation) Rules, 2022. Practice varies by state and clinic &mdash; confirm every step with your ART bank, clinic or lawyer.</p>
-<p>Last reviewed October 2026.</p>
-</div>
-
-</div>
-
-<div id="apptabs">
-  <a href="donor.html" class="on">Egg Donor</a>
-  <a href="contacts.html">My Donors</a>
-  <a href="index.html">Surrogacy</a>
-</div>
+<footer>
+<p>Surrogacy Guide · Connecting families with care.</p>
+</footer>
+</main>
 
 <script>
-(function(){
-  var sel = document.getElementById('langsel');
-  function set(l){
-    document.documentElement.setAttribute('data-lang', l);
-    document.documentElement.lang = l;
-    sel.value = l;
-    try{ localStorage.setItem('dblang', l); }catch(e){}
-  }
-  var saved = 'en';
-  try{ saved = localStorage.getItem('dblang') || 'en'; }catch(e){}
-  if(['en','hi','pa'].indexOf(saved) < 0) saved = 'en';
-  set(saved);
-  sel.addEventListener('change', function(){ set(this.value); });
-})();
-</script>
-
-<!-- ===== CLICKABLE COUNTER CARDS ===== -->
-<style>
-.counters.stc-row{display:flex;gap:8px;background:none;border:0;padding:0;margin:16px 0;text-align:center}
-.counters .stc{position:relative;background:#fff;border:1.5px solid var(--line);border-radius:16px;padding:14px 4px 12px;cursor:pointer;transition:transform .12s,background .12s,border-color .12s}
-.counters .stc:active{transform:scale(.95);background:#fdeaf3;border-color:#f0b8d3}
-.counters .stc .stc-ch{position:absolute;top:5px;right:8px;color:#e2a0c2;font-size:15px;line-height:1;display:block}
-.counters .stc:active .stc-ch{color:var(--pink)}
-.counters .stc .stc-vl{display:block;font-style:normal;margin-top:5px;font-weight:700;font-size:.66rem;color:var(--pink)}
-.counters .stc .stc-vl span{font-size:inherit;color:inherit}
-.counters .stc.zero{opacity:.6;cursor:default}
-.counters .stc.zero .stc-ch{display:none}
-.counters .stc.zero .stc-vl{color:var(--muted)}
-</style>
-<script>
-(function(){
-  var row=document.querySelector('.counters');
-  if(!row) return;
-  var cells=[].slice.call(row.children);
-  if(cells.length<3) return;
-  var kinds=['donor','surrogate','agency'];
-  function tri(en,hi,pa){
-    return '<span lang="en">'+en+'</span><span lang="hi">'+hi+'</span><span lang="pa">'+pa+'</span>';
-  }
-  row.classList.add('stc-row');
-  cells.slice(0,3).forEach(function(cell,i){
-    var kind=kinds[i];
-    var b=cell.querySelector('b');
-    var n=b?parseInt((b.textContent||'').replace(/\D/g,''),10):0;
-    cell.classList.add('stc');
-    if(!n) cell.classList.add('zero');
-    cell.setAttribute('data-kind',kind);
-    var ch=document.createElement('span'); ch.className='stc-ch'; ch.textContent='\u203A'; cell.appendChild(ch);
-    var vl=document.createElement('em'); vl.className='stc-vl';
-    vl.innerHTML = n ? tri('view list','सूची देखें','ਸੂਚੀ ਵੇਖੋ') : tri('none yet','अभी नहीं','ਹਾਲੇ ਨਹੀਂ');
-    cell.appendChild(vl);
-    cell.addEventListener('click',function(){
-      if(cell.classList.contains('zero')) return;
-      location.href='directory.html?t='+kind;
-    });
-  });
-})();
-</script>
-
-<!-- ===== SPLASH + ONBOARDING ===== -->
-<style>
-#spl{position:fixed;inset:0;z-index:99999;background:#d81b73;display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden;transition:opacity .35s}
-#spl .sp-glow{position:absolute;width:215px;height:215px;border-radius:50%;background:rgba(255,255,255,.10);animation:spBreathe 2.6s ease-in-out infinite}
-@keyframes spBreathe{0%,100%{transform:scale(1);opacity:.4}50%{transform:scale(1.12);opacity:.72}}
-#spl .sp-hero{position:relative;width:164px;height:164px;display:flex;align-items:center;justify-content:center;z-index:2}
-#spl svg.sp-main{width:156px;overflow:visible}
-#spl .sp-beat{transform-box:fill-box;transform-origin:center;animation:spBeat 2.6s ease-in-out infinite}
-@keyframes spBeat{0%{transform:scale(1)}11%{transform:scale(1.07)}22%{transform:scale(1)}32%{transform:scale(1.045)}44%{transform:scale(1)}100%{transform:scale(1)}}
-#spl .sp-halo{position:absolute;width:134px;height:134px;border-radius:50%;border:2px solid #fff;opacity:0;animation:spHalo 2.6s ease-out infinite}
-@keyframes spHalo{0%{transform:scale(.76);opacity:0}12%{opacity:.45}46%{transform:scale(1.28);opacity:0}100%{opacity:0}}
-#spl .sp-ph{position:absolute;fill:#fff;opacity:0;animation:spRise 3.1s ease-out infinite}
-@keyframes spRise{0%{transform:translateY(34px) scale(.35);opacity:0}18%{opacity:.95}72%{opacity:.8}100%{transform:translateY(-66px) scale(1);opacity:0}}
-#spl .sp-spk{transform-box:fill-box;transform-origin:center;opacity:0;animation:spSpk 2.6s ease-out infinite}
-@keyframes spSpk{0%{transform:scale(0);opacity:0}10%{opacity:1}20%{transform:scale(1);opacity:1}34%{transform:scale(0);opacity:0}100%{opacity:0}}
-#spl .sp-cw{display:flex;gap:26px;position:relative;z-index:3;margin-top:20px}
-#spl .sp-cw div{text-align:center}
-#spl .sp-cw b{display:block;font-size:23px;font-weight:500;color:#fff;letter-spacing:.3px}
-#spl .sp-cw span{font-size:10px;color:#ffd0e8}
-#spl .sp-tl{font-size:10.5px;color:#ffd0e8;margin-top:16px;letter-spacing:.4px;position:relative;z-index:3}
-#spl .sp-bar{position:absolute;bottom:0;left:0;height:3px;background:#fff;width:0;animation:spLoad 2.2s ease-in-out forwards}
-@keyframes spLoad{0%{width:0}100%{width:100%}}
-
-#ob{position:fixed;inset:0;z-index:99998;background:#fff8fb;display:none;flex-direction:column;padding:26px 20px;overflow:auto;transition:opacity .35s}
-#ob .ob-in{display:none;flex-direction:column;flex:1}
-#ob .ob-in.on{display:flex}
-#ob .ob-dots{display:flex;gap:5px;margin-bottom:16px}
-#ob .ob-dots i{width:18px;height:3px;border-radius:3px;background:#f0d8e4}
-#ob .ob-dots i.on{background:#d81b73}
-#ob .ob-step{font-size:9.5px;color:#b58aa2;font-weight:600;letter-spacing:.7px}
-#ob h3{margin:8px 0 5px;font-size:15px;line-height:1.3;color:#1b2033;font-weight:600}
-#ob p{margin:0 0 15px;font-size:11.5px;color:#8a90a2;line-height:1.5}
-#ob input{width:100%;border:1.5px solid #e9dfe6;border-radius:11px;padding:13px;font-size:13.5px;background:#fff;color:#1b2033;outline:none;font-family:inherit}
-#ob input:focus{border-color:#d81b73}
-#ob .ob-btn{margin-top:auto;background:#d81b73;color:#fff;border:0;border-radius:12px;padding:15px;font-size:13.5px;font-weight:600;font-family:inherit}
-#ob .ob-skip{text-align:center;font-size:11px;color:#b58aa2;margin-top:10px}
-#ob .ob-roles{display:flex;flex-direction:column;gap:7px}
-#ob .ob-role{border:1.5px solid #eadfe6;background:#fff;border-radius:12px;padding:11px 12px;display:flex;align-items:center;gap:10px;text-align:left;font-family:inherit}
-#ob .ob-role.on{border-color:#d81b73;background:#fdeaf3}
-#ob .ob-role .t{font-size:12.5px;font-weight:600;color:#1b2033;line-height:1.25}
-#ob .ob-role .s{font-size:10px;color:#8a90a2;margin-top:1px}
-#ob .ob-role .rd{margin-left:auto;width:16px;height:16px;border:2px solid #e0d4dd;border-radius:50%;flex:none}
-#ob .ob-role.on .rd{border-color:#d81b73;background:#d81b73;box-shadow:inset 0 0 0 2.5px #fff}
-</style>
-
-<div id="spl">
-  <div class="sp-glow"></div>
-  <div class="sp-hero">
-    <div class="sp-halo"></div>
-    <svg class="sp-ph" style="left:-10%;top:40%;width:12px;animation-delay:-.2s" viewBox="0 0 20 18"><path d="M10 17 C10 17 1 11 1 6 C1 3 3.5 1 6 1 C8 1 9.5 2.5 10 4 C10.5 2.5 12 1 14 1 C16.5 1 19 3 19 6 C19 11 10 17 10 17 Z"/></svg>
-    <svg class="sp-ph" style="left:12%;top:60%;width:9px;animation-delay:-1.1s" viewBox="0 0 20 18"><path d="M10 17 C10 17 1 11 1 6 C1 3 3.5 1 6 1 C8 1 9.5 2.5 10 4 C10.5 2.5 12 1 14 1 C16.5 1 19 3 19 6 C19 11 10 17 10 17 Z"/></svg>
-    <svg class="sp-ph" style="left:4%;top:82%;width:14px;animation-delay:-2.3s" viewBox="0 0 20 18"><path d="M10 17 C10 17 1 11 1 6 C1 3 3.5 1 6 1 C8 1 9.5 2.5 10 4 C10.5 2.5 12 1 14 1 C16.5 1 19 3 19 6 C19 11 10 17 10 17 Z"/></svg>
-    <svg class="sp-ph" style="left:86%;top:46%;width:11px;animation-delay:-1.6s" viewBox="0 0 20 18"><path d="M10 17 C10 17 1 11 1 6 C1 3 3.5 1 6 1 C8 1 9.5 2.5 10 4 C10.5 2.5 12 1 14 1 C16.5 1 19 3 19 6 C19 11 10 17 10 17 Z"/></svg>
-    <svg class="sp-ph" style="left:92%;top:70%;width:13px;animation-delay:-2.8s" viewBox="0 0 20 18"><path d="M10 17 C10 17 1 11 1 6 C1 3 3.5 1 6 1 C8 1 9.5 2.5 10 4 C10.5 2.5 12 1 14 1 C16.5 1 19 3 19 6 C19 11 10 17 10 17 Z"/></svg>
-    <svg class="sp-ph" style="left:70%;top:80%;width:9px;animation-delay:-.9s" viewBox="0 0 20 18"><path d="M10 17 C10 17 1 11 1 6 C1 3 3.5 1 6 1 C8 1 9.5 2.5 10 4 C10.5 2.5 12 1 14 1 C16.5 1 19 3 19 6 C19 11 10 17 10 17 Z"/></svg>
-    <svg class="sp-ph" style="left:66%;top:2%;width:10px;animation-delay:-1.4s" viewBox="0 0 20 18"><path d="M10 17 C10 17 1 11 1 6 C1 3 3.5 1 6 1 C8 1 9.5 2.5 10 4 C10.5 2.5 12 1 14 1 C16.5 1 19 3 19 6 C19 11 10 17 10 17 Z"/></svg>
-    <svg class="sp-ph" style="left:24%;top:10%;width:9px;animation-delay:-2.5s" viewBox="0 0 20 18"><path d="M10 17 C10 17 1 11 1 6 C1 3 3.5 1 6 1 C8 1 9.5 2.5 10 4 C10.5 2.5 12 1 14 1 C16.5 1 19 3 19 6 C19 11 10 17 10 17 Z"/></svg>
-    <g stroke="#fff" stroke-width="2" stroke-linecap="round">
-      <path class="sp-spk" d="M22 28 v-7 M18.5 24.5 h7" style="animation-delay:.35s"/>
-      <path class="sp-spk" d="M88 36 v-6 M85 33 h6" style="animation-delay:.95s"/>
-    </g>
-    <svg class="sp-main sp-beat" viewBox="0 0 100 100">
-      <path d="M50 88 C26 74 5 60 5 40 C5 27 13 15 25 15 C34 15 43 20 50 27 C57 20 66 15 75 15 C87 15 95 27 95 40 C95 60 74 74 50 88 Z" fill="#fff"/>
-      <circle cx="38" cy="32" r="9.5" fill="#d81b73"/>
-      <path d="M23 78 C23 58 29 43 38 43 C47 43 53 58 53 78 Z" fill="#d81b73"/>
-      <circle cx="65" cy="46" r="6.5" fill="#d81b73"/>
-      <path d="M56 78 C56 64 60 54 65 54 C70 54 74 64 74 78 Z" fill="#d81b73"/>
-    </svg>
-  </div>
-  <div class="sp-cw"><div><b id="sp1">0</b><span>donors</span></div><div><b id="sp2">0</b><span>surrogates</span></div><div><b id="sp3">0</b><span>agencies</span></div></div>
-  <div class="sp-tl">building your book</div>
-  <div class="sp-bar"></div>
-</div>
-
-<div id="ob">
-  <div class="ob-in on" id="ob1">
-    <div class="ob-dots"><i class="on"></i><i></i></div>
-    <div class="ob-step">WELCOME</div>
-    <h3>What should we call you?</h3>
-    <p>So other agents know who they are dealing with when you send them a donor.</p>
-    <input id="obName" placeholder="Your name" autocomplete="off">
-    <button class="ob-btn" id="obNext">Continue</button>
-    <div class="ob-skip" id="obSkip">Skip for now</div>
-  </div>
-  <div class="ob-in" id="ob2">
-    <div class="ob-dots"><i></i><i class="on"></i></div>
-    <div class="ob-step">ONE LAST THING</div>
-    <h3>And what best describes you?</h3>
-    <p>This decides what you see first.</p>
-    <div class="ob-roles" id="obRoles"></div>
-    <button class="ob-btn" id="obDone">Start using Donor Book</button>
-  </div>
-</div>
-
-<script>
-(function(){
-  var spl=document.getElementById('spl'), ob=document.getElementById('ob');
-  function fade(el){ el.style.opacity=0; setTimeout(function(){ el.style.display='none'; },380); }
-
-  function count(){
-    var to=[187,23,4], ids=['sp1','sp2','sp3'], t0=performance.now();
-    function step(now){
-      var p=Math.min((now-t0)/1100,1), e=1-Math.pow(1-p,3);
-      ids.forEach(function(id,i){ document.getElementById(id).textContent=Math.round(to[i]*e)+(p>=1?'+':''); });
-      if(p<1) requestAnimationFrame(step);
+// Language switcher logic
+document.getElementById('langsel').addEventListener('change', function(e) {
+  var lang = e.target.value;
+  document.documentElement.setAttribute('lang', lang);
+  document.documentElement.setAttribute('data-lang', lang);
+  localStorage.setItem('selectedLang', lang);
+  
+  // Hide all elements with lang attribute, then show only matching ones
+  var allLangs = document.querySelectorAll('[lang]');
+  allLangs.forEach(function(el) {
+    if (el.getAttribute('lang') === lang) {
+      el.style.display = 'block';
+    } else {
+      el.style.display = 'none';
     }
-    requestAnimationFrame(step);
-  }
-
-  var ROLES=[['Egg donor agency','I keep a book of donors'],['Intended parent','Looking for a donor'],['Egg donor','I want to donate'],['Surrogate mother','Carrying for a couple'],['Clinic or IVF centre','We work with donors daily']];
-  document.getElementById('obRoles').innerHTML=ROLES.map(function(r,i){
-    return '<button class="ob-role'+(i===0?' on':'')+'" data-r="'+r[0]+'"><div><div class="t">'+r[0]+'</div><div class="s">'+r[1]+'</div></div><div class="rd"></div></button>';
-  }).join('');
-  document.getElementById('obRoles').addEventListener('click',function(e){
-    var b=e.target.closest('.ob-role'); if(!b) return;
-    document.querySelectorAll('.ob-role').forEach(function(x){x.classList.remove('on')});
-    b.classList.add('on'); ob._role=b.getAttribute('data-r');
   });
-  ob._role=ROLES[0][0];
+  
+  // Special handling for body elements without lang attribute
+  var bodyElements = document.querySelectorAll('body > *');
+  bodyElements.forEach(function(el) {
+    if (!el.hasAttribute('lang')) {
+      el.style.display = 'block';
+    }
+  });
+});
 
-  function openOb(){
-    ob.style.display='flex';
-    document.getElementById('obNext').onclick=function(){
-      if(!document.getElementById('obName').value.trim()) return;
-      document.getElementById('ob1').classList.remove('on');
-      document.getElementById('ob2').classList.add('on');
-    };
-    document.getElementById('obSkip').onclick=function(){ ob.style.display='none'; };
-    document.getElementById('obDone').onclick=function(){
-      try{
-        localStorage.setItem('db.onboarded','1');
-        localStorage.setItem('db.me',JSON.stringify({name:document.getElementById('obName').value.trim(),role:ob._role||''}));
-      }catch(e){}
-      fade(ob);
-    };
-  }
-
-  document.body.style.overflow='hidden';
-  count(); setInterval(count,2600);
-
-  var cold=true;
-  try{ if(sessionStorage.getItem('db.splash')){ cold=false; spl.style.display='none'; } }catch(e){}
-  try{ sessionStorage.setItem('db.splash','1'); }catch(e){}
-
-  if(cold){
-    setTimeout(function(){
-      document.body.style.overflow='';
-      var onboarded=false;
-      try{ onboarded=!!localStorage.getItem('db.onboarded'); }catch(e){}
-      fade(spl);
-      if(!onboarded) setTimeout(openOb,420);
-    },2200);
-  } else {
-    document.body.style.overflow='';
-  }
-})();
+// Load saved language
+var saved = localStorage.getItem('selectedLang') || 'en';
+document.getElementById('langsel').value = saved;
+document.documentElement.setAttribute('lang', saved);
+document.documentElement.setAttribute('data-lang', saved);
 </script>
 </body>
 </html>
