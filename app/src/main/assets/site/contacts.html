@@ -1,300 +1,356 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <title>My Donors</title>
 <style>
-:root{--pink:#d63c7c;--ink:#2a2447;--muted:#5d5880;--line:#f0dbe6;--bg:#fff7fb;--soft:#ffe6f0}
-*{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,system-ui,sans-serif;padding-bottom:76px}
-.topbar{position:sticky;top:0;z-index:20;display:flex;align-items:center;justify-content:space-between;gap:8px;background:#fff;border-bottom:1px solid var(--line);padding:10px 14px}
-.brand{font-weight:700;color:var(--pink);font-size:15px}
-.stats{font-size:.7rem;color:#9a92a8;text-align:right;line-height:1.25}
-.selbtn{font:inherit;font-size:.72rem;font-weight:700;color:var(--pink);background:var(--soft);border:1px solid #f7b9d3;border-radius:999px;padding:5px 10px}
-.searchbar{padding:10px 12px 6px}
-input.q{width:100%;border:1px solid var(--line);border-radius:10px;padding:10px 12px;font:inherit;font-size:.86rem;background:#fff;color:var(--ink)}
-input.q::placeholder{color:#a79fb8}
-.chips{display:flex;gap:6px;flex-wrap:wrap;padding:0 12px 8px}
-.chip{font-size:.72rem;font-weight:700;padding:6px 11px;border-radius:999px;border:1px solid var(--line);background:#fff;color:#8a7fa5}
-.chip.on{background:var(--pink);color:#fff;border-color:var(--pink)}
-.count{font-size:.72rem;color:#9a92a8;padding:0 14px 8px}
-.row{display:flex;align-items:center;gap:10px;background:#fff;border:1px solid var(--line);border-radius:12px;padding:11px 12px;margin:0 12px 7px}
-.row.sel{border-color:var(--pink);background:#fff6fa}
-.nm{flex:1;min-width:0}
-.nm b{display:block;font-size:.9rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.nm span{display:block;font-size:.78rem;color:#8a7fa5}
-.blurnum{filter:blur(3.5px);display:inline-block}
-.dup{display:inline-block;font-style:normal;font-size:.62rem;color:#b8860b;background:#fff3d2;border-radius:999px;padding:1px 7px;margin-top:3px}
-.tag{font-size:.66rem;font-weight:700;padding:4px 9px;border-radius:999px;background:var(--soft);color:#c2347a;flex:none}
-.tag.none{background:#f4f1f6;color:#9a92a8}
-.tick{flex:none;width:20px;height:20px;border-radius:50%;background:var(--pink);color:#fff;font-size:.7rem;display:flex;align-items:center;justify-content:center;font-weight:700}
-.tick.off{background:#fff;border:1.5px solid #e0d6e8}
-.more{display:block;width:calc(100% - 24px);margin:4px 12px 14px;padding:11px;border-radius:10px;border:1px solid var(--line);background:#fff;color:var(--pink);font:inherit;font-size:.8rem;font-weight:700}
-.legal{margin:8px 16px 10px;font-size:.68rem;color:#9a92a8;line-height:1.5}
-.selbar{position:fixed;left:0;right:0;bottom:60px;z-index:40;background:#fff;border-top:1px solid var(--line);padding:10px 12px;box-shadow:0 -3px 14px rgba(120,80,160,.10)}
-.selbar .t{font-size:.72rem;color:#9a92a8;margin-bottom:7px}
-.sheet{position:fixed;left:0;right:0;bottom:0;z-index:50;background:#fff;border-radius:18px 18px 0 0;border-top:1px solid var(--line);padding:14px;max-height:92%;overflow-y:auto;box-shadow:0 -6px 24px rgba(120,80,160,.18)}
-.sheet h3{margin:0;font-size:1rem}
-.sheet .num{font-size:.85rem;font-weight:700;margin:2px 0 8px}
-.fields{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:8px 0}
-.f{display:block}
-.f>span{display:block;font-size:.62rem;color:#9a92a8;margin-bottom:2px}
-.f select,.f input{width:100%;border:1px solid var(--line);border-radius:9px;padding:9px;font:inherit;font-size:.8rem;background:#fffdf9;color:var(--ink)}
-.btn{display:block;width:100%;border:0;border-radius:11px;padding:13px;font:inherit;font-size:.85rem;font-weight:700;background:var(--pink);color:#fff;margin-bottom:7px}
-.btn.ghost{background:#fff;color:var(--pink);border:1px solid var(--pink)}
-.btnrow{display:flex;gap:7px}
-.btnrow .btn{flex:1}
-.btnrow .btn.grow{flex:1.5}
-.close{position:absolute;right:14px;top:12px;font:inherit;font-size:.75rem;font-weight:700;color:#9a92a8;background:none;border:0}
-.scrim{position:fixed;inset:0;z-index:45;background:rgba(30,20,45,.35)}
-#apptabs{position:fixed;left:0;right:0;bottom:0;z-index:60;display:flex;background:#fff;border-top:1px solid var(--line)}
-#apptabs a{flex:1;text-align:center;padding:15px 4px;font-size:.78rem;font-weight:700;text-decoration:none;color:#8a7fa5;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-#apptabs a.on{color:var(--pink);box-shadow:inset 0 3px 0 var(--pink)}
-.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:80px;z-index:70;background:#2a2447;color:#fff;font-size:.78rem;font-weight:600;padding:9px 16px;border-radius:999px}
-.center{padding:40px 20px;text-align:center;color:#9a92a8;font-size:.85rem}
+:root{--pink:#d6337a;--pinkL:#fdeaf3;--ink:#1b2033;--mut:#8a90a2;--line:#f3dce7;--bg:#fff8fb;--tabs:64px}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0}
+body{background:var(--bg);color:var(--ink);font:15px/1.35 -apple-system,"Segoe UI",Roboto,Arial,sans-serif;padding-bottom:calc(var(--tabs) + 20px + env(safe-area-inset-bottom))}
+.top{padding:14px 16px 0}
+.hrow{display:flex;align-items:center;gap:10px}
+.hrow h1{margin:0;font-size:21px;color:var(--pink)}
+.stat{flex:1;color:var(--mut);font-size:12.5px}
+.selbtn{border:1.5px solid var(--pink);color:var(--pink);background:#fff;border-radius:999px;padding:7px 18px;font-weight:700;font-size:13.5px}
+.selbtn.on{background:var(--pink);color:#fff}
+input[type=search],.inp{width:100%;border:1.5px solid #e9dfe6;background:#fff;border-radius:13px;padding:12px 14px;font-size:15px;color:var(--ink);outline:none}
+input[type=search]:focus,.inp:focus{border-color:var(--pink)}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0 8px}
+.chip{border:1.5px solid #eadfe6;background:#fff;color:#6b7280;border-radius:999px;padding:8px 15px;font-size:13px;font-weight:600}
+.chip.on{background:var(--pink);border-color:var(--pink);color:#fff}
+.mcount{color:var(--mut);font-size:12.5px;padding:2px 2px 10px}
+.list{padding:0 12px}
+.card{display:flex;align-items:flex-start;gap:10px;background:#fff;border:1px solid #f6e7ef;border-radius:16px;padding:14px;margin-bottom:10px;box-shadow:0 1px 3px rgba(214,51,122,.05)}
+.card .nm{font-weight:700;font-size:15.5px}
+.card .nu{color:#5a6172;font-size:14px;margin-top:3px}
+.bl{filter:blur(4.5px)}
+body.searching .bl{filter:none}
+.badges{display:flex;gap:6px;margin-top:7px;flex-wrap:wrap}
+.bdg{font-size:11px;border-radius:999px;padding:3px 9px;font-weight:700}
+.bdg.dup{background:#fdf1d6;color:#a07500}
+.bdg.tag{background:var(--pinkL);color:var(--pink)}
+.tagbtn{margin-left:auto;border:0;background:#f6f2f5;color:#5a6172;border-radius:999px;padding:8px 14px;font-size:12.5px;font-weight:700;white-space:nowrap}
+.chk{width:22px;height:22px;border:2px solid #ddd0d9;border-radius:7px;margin-top:3px;display:none;flex:none}
+body.selmode .chk{display:block}
+body.selmode .tagbtn{display:none}
+.chk.on{background:var(--pink);border-color:var(--pink)}
+.empty{padding:40px 20px;text-align:center;color:var(--mut)}
+.scrim{position:fixed;inset:0;background:rgba(25,10,20,.35);opacity:0;pointer-events:none;transition:.2s;z-index:60}
+.scrim.on{opacity:1;pointer-events:auto}
+.sheet{position:fixed;left:0;right:0;bottom:0;background:#fff;border-radius:22px 22px 0 0;max-height:84vh;display:flex;flex-direction:column;transform:translateY(112%);transition:transform .22s ease;z-index:70}
+.sheet.on{transform:none}
+.shead{display:flex;gap:10px;align-items:flex-start;padding:16px 18px 12px;border-bottom:1px solid var(--line);background:#fff;border-radius:22px 22px 0 0}
+.shead .nm{font-size:19px;font-weight:800}
+.shead .nu{color:#5a6172;margin-top:2px}
+.close{margin-left:auto;border:0;background:#f6f2f5;color:#5a6172;border-radius:999px;padding:9px 16px;font-weight:700}
+.sbody{overflow:auto;padding:14px 18px calc(var(--tabs) + 34px + env(safe-area-inset-bottom))}
+.lbl{font-size:12.5px;color:var(--mut);margin:14px 0 6px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+select.sel{width:100%;border:1.5px solid #e9dfe6;border-radius:13px;padding:12px;font-size:14.5px;background:#fff;color:var(--ink);appearance:none;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%238a90a2' stroke-width='3'><path d='M6 9l6 6 6-6'/></svg>");background-repeat:no-repeat;background-position:right 12px center}
+.pchips{display:flex;flex-wrap:wrap;gap:8px}
+.pc{border:1.5px solid #eadfe6;background:#fff;color:#6b7280;border-radius:999px;padding:9px 16px;font-weight:700;font-size:13.5px}
+.pc.on{background:var(--pink);border-color:var(--pink);color:#fff}
+.acts{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:18px}
+.btn{border:0;border-radius:14px;padding:15px;font-size:15px;font-weight:800}
+.btn.p{background:var(--pink);color:#fff}
+.btn.o{background:#fff;color:var(--pink);border:1.5px solid var(--pink)}
+.citypop{position:fixed;left:18px;right:18px;background:#fff;border:1px solid var(--line);border-radius:14px;box-shadow:0 12px 34px rgba(0,0,0,.18);max-height:212px;overflow:auto;z-index:95;display:none}
+.citypop.on{display:block}
+.citypop div{padding:12px 15px;border-bottom:1px solid #f8f0f4}
+.apptabs{position:fixed;left:0;right:0;bottom:0;height:calc(var(--tabs) + env(safe-area-inset-bottom));padding-bottom:env(safe-area-inset-bottom);display:flex;background:#fff;border-top:1px solid var(--line);z-index:55}
+.apptabs a{position:relative;flex:1;display:flex;align-items:center;justify-content:center;color:#9aa0b0;font-weight:700;font-size:13.5px;text-decoration:none}
+.apptabs a.on{color:var(--pink)}
+.apptabs a.on:after{content:"";position:absolute;bottom:0;width:66px;height:3px;background:var(--pink);border-radius:3px}
+.bulkbar{position:fixed;left:12px;right:12px;bottom:calc(var(--tabs) + 10px + env(safe-area-inset-bottom));background:#1b2033;color:#fff;border-radius:16px;padding:11px 12px;display:none;gap:8px;align-items:center;z-index:56;flex-wrap:wrap}
+.bulkbar.on{display:flex}
+.bulkbar b{font-size:13px;margin-right:4px}
+.bulkbar button{border:0;background:rgba(255,255,255,.14);color:#fff;border-radius:999px;padding:8px 12px;font-size:12.5px;font-weight:700}
+.bulkbar button.go{background:var(--pink)}
+.reqrow{display:flex;gap:10px;align-items:center;padding:13px 0;border-bottom:1px solid var(--line)}
+.reqrow .rn{font-weight:700}
+.reqrow .rs{font-size:12.5px;color:var(--mut);margin-top:3px}
+.pend{margin-left:auto;background:#fdf1d6;color:#a07500;border-radius:999px;padding:5px 12px;font-size:11.5px;font-weight:700}
 </style>
 </head>
 <body>
 
-<div class="topbar">
-  <span class="brand">My Donors</span>
-  <span class="stats" id="stats"></span>
-  <button class="selbtn" id="selbtn">Select</button>
-</div>
-
-<div class="searchbar"><input class="q" id="q" placeholder="Search name or number"></div>
-<div class="chips" id="chips"></div>
-<div class="count" id="count"></div>
-<div id="list"><div class="center">Reading your contacts…</div></div>
-<div id="more"></div>
-
-<div class="legal">
-  <b>Donor Book</b> — a free tool for egg donor agencies, donors and clinics. Independent, not affiliated with any clinic or government office.<br>
-  General information, not medical or legal advice. Last reviewed October 2026.
-</div>
-
-<div class="selbar" id="selbar" hidden>
-  <div class="t" id="selcount">0 selected</div>
-  <div class="chips" style="padding:0" id="selchips"></div>
-</div>
-
-<div class="scrim" id="scrim" hidden></div>
-
-<div class="sheet" id="sheet" hidden>
-  <button class="close" id="closebtn">Close</button>
-  <h3 id="sname"></h3>
-  <div class="num" id="snum"></div>
-  <div class="chips" style="padding:0" id="spersona"></div>
-  <div class="fields">
-    <label class="f"><span>Age</span><select id="fage"></select></label>
-    <label class="f"><span>Blood group</span><select id="fbg"></select></label>
-    <label class="f"><span>Height</span><select id="fht"></select></label>
-    <label class="f"><span>City</span><input id="fcity" list="cities" placeholder="Type a city"></label>
+<div class="top">
+  <div class="hrow">
+    <h1>My Donors</h1>
+    <span class="stat" id="stat">loading…</span>
+    <button class="selbtn" id="selBtn">Select</button>
   </div>
-  <label class="f" style="display:block;margin-bottom:10px"><span>Note</span><input id="fnote" placeholder="Anything useful"></label>
-  <div class="btnrow">
-    <button class="btn grow" id="sharebtn">Share on WhatsApp</button>
-    <button class="btn ghost" id="copybtn">Copy</button>
-  </div>
-  <button class="btn ghost" id="callbtn">Call</button>
+  <input id="q" type="search" placeholder="Search name or number" autocomplete="off" style="margin-top:12px">
+  <div class="chips" id="chips"></div>
+  <div class="mcount" id="mcount"></div>
 </div>
 
-<datalist id="cities">
-  <option>Chandigarh</option><option>Mohali</option><option>Panchkula</option><option>Delhi</option><option>Gurgaon</option><option>Noida</option><option>Faridabad</option><option>Mumbai</option><option>Pune</option><option>Nagpur</option><option>Bangalore</option><option>Hyderabad</option><option>Chennai</option><option>Kolkata</option><option>Ahmedabad</option><option>Surat</option><option>Jaipur</option><option>Lucknow</option><option>Indore</option><option>Bhopal</option><option>Ludhiana</option><option>Amritsar</option><option>Jalandhar</option><option>Patiala</option><option>Shimla</option><option>Dehradun</option>
-</datalist>
+<div class="list" id="list"></div>
 
-<div id="apptabs">
+<div class="scrim" id="scrim"></div>
+<div class="sheet" id="sheet">
+  <div class="shead">
+    <div style="min-width:0"><div class="nm" id="sName"></div><div class="nu" id="sNum"></div></div>
+    <button class="close" id="sClose">Close</button>
+  </div>
+  <div class="sbody" id="sBody"></div>
+</div>
+<div class="citypop" id="cityPop"></div>
+<div class="bulkbar" id="bulkbar"></div>
+
+<div class="apptabs">
   <a href="donor.html">Egg Donor</a>
   <a href="contacts.html" class="on">My Donors</a>
   <a href="index.html">Surrogacy</a>
 </div>
 
 <script>
-(function(){
-  var PERSONAS = ['Donor','Surrogate','Parent','Clinic','Agent'];
-  var FILTERS = [['all','All'],['none','Untagged'],['Donor','Donors'],['Surrogate','Surrogates'],['Parent','Parents'],['Clinic','Clinics'],['Agent','Agents']];
-  var AGE = range(23,35), BG = ['A+','A-','B+','B-','O+','O-','AB+','AB-'], HT = heights();
+var ALL=[],TAGS={},DUP={},SEL={},filter='all',selectMode=false,cur=null;
+var PERSONAS=['Donor','Surrogate','Parent','Clinic','Agent'];
+var CHIPS=[['all','All'],['untagged','Untagged'],['donors','Donors'],['surrogates','Surrogates'],['parents','Parents'],['clinics','Clinics'],['agents','Agents']];
+var CITIES=["Chandigarh","Mohali","Panchkula","Delhi","Gurgaon","Noida","Greater Noida","Ghaziabad","Faridabad","Mumbai","Thane","Navi Mumbai","Pune","Nashik","Nagpur","Aurangabad","Hyderabad","Warangal","Bengaluru","Mysore","Mangalore","Chennai","Coimbatore","Madurai","Trichy","Salem","Vellore","Kolkata","Howrah","Siliguri","Asansol","Ahmedabad","Surat","Vadodara","Rajkot","Jaipur","Jodhpur","Udaipur","Kota","Ajmer","Bikaner","Lucknow","Kanpur","Varanasi","Agra","Meerut","Prayagraj","Gorakhpur","Indore","Bhopal","Jabalpur","Gwalior","Ujjain","Patna","Ranchi","Jamshedpur","Dhanbad","Raipur","Bilaspur","Bhubaneswar","Guwahati","Kochi","Thrissur","Kozhikode","Ludhiana","Amritsar","Jalandhar","Patiala","Bathinda","Ambala","Karnal","Panipat","Rohtak","Hisar","Dehradun","Shimla","Solan"];
 
-  var ALL = [], TAGS = {}, dupes = {}, filter = 'all', query = '', shown = 0, PAGE = 200, selecting = false, picked = {}, current = null;
+function digits(s){return String(s==null?'':s).replace(/\D/g,'')}
+function keyOf(p){return digits(p).slice(-10)}
+function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+function loadTags(){try{TAGS=JSON.parse(localStorage.getItem('db.tags')||'{}')||{}}catch(e){TAGS={}}}
+function saveTags(){try{localStorage.setItem('db.tags',JSON.stringify(TAGS))}catch(e){}}
+function inReqs(){try{return JSON.parse(localStorage.getItem('db.req.in')||'[]')||[]}catch(e){return[]}}
 
-  function range(a,b){ var o=[]; for(var i=a;i<=b;i++) o.push(String(i)); return o; }
-  function heights(){ var o=[],f=4,i=6; while(f<7||(f===7&&i===0)){ o.push(f+"'"+(i?i:'0')+'"'); i++; if(i===12){i=0;f++;} if(f===7&&i>0) break; } o.push("7'0\""); return o; }
-  function key(p){ var d=(p||'').replace(/[^0-9]/g,''); return d.length>10?d.slice(-10):d; }
-  function el(id){ return document.getElementById(id); }
-  function toast(m){ var t=el('toast'); if(!t){ t=document.createElement('div'); t.className='toast'; t.id='toast'; document.body.appendChild(t);} t.textContent=m; t.hidden=false; clearTimeout(t._h); t._h=setTimeout(function(){ t.hidden=true; },1600); }
+function loadContacts(){
+  var arr=null;
+  try{ if(window.DB&&window.DB.getContacts){ arr=JSON.parse(window.DB.getContacts()||'[]'); } }
+  catch(e){ arr=[{name:'BRIDGE ERROR',phone:String((e&&e.message)||e),err:true}]; }
+  if(!arr||!arr.length){ arr=[{name:'No contacts returned by the bridge',phone:'-',err:true}]; }
+  ALL=arr.map(function(c){
+    var nm=(c.name||c.display||c.displayName||c.full||'').trim();
+    var ph=String(c.phone||c.number||c.tel||'').trim();
+    return {name:nm,phone:ph,key:c.key||keyOf(ph),err:!!c.err};
+  }).filter(function(c){return c.name||c.phone});
+  DUP={};
+  ALL.forEach(function(c){ if(c.key) DUP[c.key]=(DUP[c.key]||0)+1; });
+}
 
-  function boot(){
-    if(!window.DB){
-      ALL = [{id:'1',name:'Rekha Sharma',phones:['+91 98765 43210']},{id:'2',name:'Dr Anjali Mehta',phones:['+91 99887 76655']}];
-    } else {
-      try { TAGS = JSON.parse(window.DB.getTags() || '{}'); } catch(e){ TAGS = {}; }
-      try { ALL = JSON.parse(window.DB.getContacts() || '[]'); } catch(e){ ALL = []; }
-    }
-    var seen = {};
-    ALL.forEach(function(c){
-      var k = key((c.phones||[])[0] || '');
-      seen[k] = (seen[k]||0)+1;
-    });
-    dupes = seen;
-    buildChips();
-    render();
-  }
+function persona(c){var t=TAGS[c.key];return (t&&t.p)||''}
+function wantPersona(){var w=filter.slice(0,-1);return w.charAt(0).toUpperCase()+w.slice(1)}
 
-  function buildChips(){
-    el('chips').innerHTML = FILTERS.map(function(f){
-      return '<span class="chip'+(f[0]===filter?' on':'')+'" data-f="'+f[0]+'">'+f[1]+'</span>';
-    }).join('');
-  }
+function renderChips(){
+  document.getElementById('chips').innerHTML=CHIPS.map(function(c){
+    return '<button class="chip'+(filter===c[0]?' on':'')+'" data-f="'+c[0]+'">'+c[1]+'</button>';
+  }).join('')+'<button class="chip" id="chipReq">Requests ('+inReqs().length+')</button>';
+}
 
-  function personaOf(c){ var t=TAGS[key((c.phones||[])[0]||'')]; return t && t.p ? t.p : ''; }
-
-  function visible(){
-    var q = query.toLowerCase();
-    return ALL.filter(function(c){
-      var p = personaOf(c);
-      if(filter==='none' && p) return false;
-      if(filter!=='all' && filter!=='none' && p!==filter) return false;
-      if(!q) return true;
-      if((c.name||'').toLowerCase().indexOf(q)>=0) return true;
-      return (c.phones||[]).some(function(n){ return n.replace(/[^0-9]/g,'').indexOf(q.replace(/[^0-9]/g,''))>=0; });
-    });
-  }
-
-  function render(){
-    var list = visible();
-    var tagged = ALL.filter(personaOf).length;
-    var donors = ALL.filter(function(c){ return personaOf(c)==='Donor'; }).length;
-    el('stats').textContent = ALL.length+' contacts · '+tagged+' tagged · '+donors+' donors';
-    el('count').textContent = list.length + (list.length===1?' person':' people') + (query?' matching':'');
-    if(!list.length){ el('list').innerHTML = '<div class="center">Nothing here yet.</div>'; el('more').innerHTML=''; return; }
-    var slice = list.slice(0, shown+PAGE);
-    el('list').innerHTML = slice.map(function(c, i){
-      var k = key((c.phones||[])[0]||'');
-      var p = personaOf(c);
-      var d = (dupes[k]||0) > 1 ? '<i class="dup">'+(dupes[k]-1)+' duplicate'+(dupes[k]>2?'s':'')+'</i>' : '';
-      var num = (c.phones||[])[0] || '';
-      return '<div class="row'+(picked[k]?' sel':'')+'" data-k="'+k+'" data-n="'+(c.name||'').replace(/"/g,'&quot;')+'" data-p="'+num+'">'
-        + (selecting ? '<span class="tick'+(picked[k]?'':' off')+'">'+(picked[k]?'✓':'')+'</span>' : '')
-        + '<div class="nm"><b>'+(c.name||'(no name)')+'</b><span class="blurnum">'+num+'</span>'+d+'</div>'
-        + '<span class="tag'+(p?'':' none')+'">'+(p||'Set tag')+'</span></div>';
-    }).join('');
-    el('more').innerHTML = list.length > slice.length ? '<button class="more" id="morebtn">Show more ('+(list.length-slice.length)+' left)</button>' : '';
-  }
-
-  function savePersona(k, p){
-    if(!TAGS[k]) TAGS[k] = {};
-    if(p) TAGS[k].p = p; else delete TAGS[k].p;
-    if(window.DB) window.DB.setTag(k, p||'');
-  }
-  function saveDetail(k, f, v){
-    if(!TAGS[k]) TAGS[k] = {};
-    if(v) TAGS[k][f] = v; else delete TAGS[k][f];
-    if(window.DB) window.DB.setDetail(k, f, v||'');
-  }
-
-  function openSheet(k, name, num){
-    current = {k:k, name:name, num:num};
-    el('sname').textContent = name || '(no name)';
-    el('snum').textContent = num;
-    var t = TAGS[k] || {};
-    el('spersona').innerHTML = PERSONAS.map(function(p){
-      return '<span class="chip'+(t.p===p?' on':'')+'" data-p="'+p+'">'+p+'</span>';
-    }).join('');
-    fill(el('fage'), AGE, t.age); fill(el('fbg'), BG, t.bg); fill(el('fht'), HT, t.ht);
-    el('fcity').value = t.city || '';
-    el('fnote').value = t.note || '';
-    el('sheet').hidden = false; el('scrim').hidden = false;
-  }
-  function fill(sel, opts, val){
-    sel.innerHTML = '<option value=""></option>' + opts.map(function(o){
-      return '<option'+(o===val?' selected':'')+'>'+o+'</option>';
-    }).join('');
-  }
-  function closeSheet(){ el('sheet').hidden = true; el('scrim').hidden = true; current = null; }
-
-  function shareText(){
-    if(!current) return '';
-    var t = TAGS[current.k] || {};
-    var l1 = current.name + (t.age ? ', '+t.age : '');
-    var bits = [t.bg, t.ht, t.city].filter(Boolean);
-    var l2 = bits.join(' · ');
-    var out = l1 + (l2 ? '\n'+l2 : '');
-    if(t.note) out += '\n'+t.note;
-    out += '\n— via Donor Book';
-    return out;
-  }
-
-  // ---------- events ----------
-  el('q').addEventListener('input', function(){ query = this.value.trim(); shown = 0; render(); });
-  el('chips').addEventListener('click', function(e){
-    var c = e.target.closest('.chip'); if(!c) return;
-    filter = c.dataset.f; shown = 0; buildChips(); render();
+function render(){
+  var q=(document.getElementById('q').value||'').trim().toLowerCase();
+  var qd=digits(q);
+  document.body.classList.toggle('searching',!!q);
+  var out=ALL.filter(function(c){
+    if(filter==='untagged'){ if(persona(c)) return false; }
+    else if(filter!=='all'){ if(persona(c)!==wantPersona()) return false; }
+    if(!q) return true;
+    if((c.name||'').toLowerCase().indexOf(q)>=0) return true;
+    if(qd.length>=2 && digits(c.phone).indexOf(qd)>=0) return true;
+    return false;
   });
-  el('more').addEventListener('click', function(e){ if(e.target.id==='morebtn'){ shown += PAGE; render(); } });
-  el('selbtn').addEventListener('click', function(){
-    selecting = !selecting; picked = {}; render();
-    el('selbar').hidden = !selecting;
-    el('selbtn').textContent = selecting ? 'Cancel' : 'Select';
-    updateSel();
+  var h='';
+  out.forEach(function(c){
+    var t=TAGS[c.key]||{};
+    var nm=c.err?('<span>'+esc(c.name)+'</span>'):('<span class="bl">'+esc(c.name||'(no name)')+'</span>');
+    var ph=c.phone?('<span class="bl">'+esc(c.phone)+'</span>'):'<span style="color:#c3c8d2">no number</span>';
+    var bd='';
+    if(DUP[c.key]>1) bd+='<span class="bdg dup">'+(DUP[c.key]-1)+' duplicate</span>';
+    if(t.p) bd+='<span class="bdg tag">'+esc(t.p)+'</span>';
+    h+='<div class="card" data-key="'+esc(c.key)+'">'
+      +'<div class="chk'+(SEL[c.key]?' on':'')+'"></div>'
+      +'<div style="flex:1;min-width:0"><div class="nm">'+nm+'</div><div class="nu">'+ph+'</div>'
+      +(bd?'<div class="badges">'+bd+'</div>':'')+'</div>'
+      +'<button class="tagbtn">'+(t.p?'Edit':'Set tag')+'</button></div>';
   });
-  function updateSel(){
-    var n = Object.keys(picked).length;
-    el('selcount').textContent = n + ' selected';
-    el('selchips').innerHTML = PERSONAS.concat(['Clear']).map(function(p){
-      return '<span class="chip" data-p="'+p+'">'+p+'</span>';
-    }).join('');
+  document.getElementById('list').innerHTML=h||'<div class="empty">Nothing here yet.</div>';
+  document.getElementById('mcount').textContent=out.length+' people matching';
+  var tagged=Object.keys(TAGS).length;
+  var donors=ALL.filter(function(c){return persona(c)==='Donor'}).length;
+  document.getElementById('stat').textContent=ALL.length+' contacts · '+tagged+' tagged · '+donors+' donors';
+}
+
+document.getElementById('q').addEventListener('input',render);
+document.getElementById('chips').addEventListener('click',function(e){
+  if(e.target.id==='chipReq'){ openReqs(); return; }
+  var b=e.target.closest('.chip'); if(!b) return;
+  filter=b.getAttribute('data-f'); renderChips(); render();
+});
+document.getElementById('list').addEventListener('click',function(e){
+  var card=e.target.closest('.card'); if(!card) return;
+  var k=card.getAttribute('data-key');
+  var c=ALL.filter(function(x){return x.key===k})[0]; if(!c) return;
+  if(selectMode){ toggleSel(k); return; }
+  openSheet(c);
+});
+
+/* ---------- select mode ---------- */
+document.getElementById('selBtn').onclick=function(){
+  selectMode=!selectMode; SEL={};
+  document.body.classList.toggle('selmode',selectMode);
+  this.classList.toggle('on',selectMode);
+  this.textContent=selectMode?'Cancel':'Select';
+  renderBulk(); render();
+};
+function toggleSel(k){ if(SEL[k]) delete SEL[k]; else SEL[k]=1; renderBulk(); render(); }
+function renderBulk(){
+  var n=Object.keys(SEL).length, bar=document.getElementById('bulkbar');
+  if(!selectMode||!n){ bar.classList.remove('on'); bar.innerHTML=''; return; }
+  bar.innerHTML='<b>'+n+' selected</b>'
+    +PERSONAS.map(function(p){return '<button data-bp="'+p+'">'+p+'</button>'}).join('')
+    +'<button class="go" data-bs="1">Share</button>';
+  bar.classList.add('on');
+}
+document.getElementById('bulkbar').addEventListener('click',function(e){
+  var b=e.target.closest('button'); if(!b) return;
+  var keys=Object.keys(SEL); if(!keys.length) return;
+  if(b.getAttribute('data-bs')){
+    var txt=keys.map(function(k){
+      var c=ALL.filter(function(x){return x.key===k})[0]||{};
+      return (c.name||'')+' — '+(c.phone||'');
+    }).join('\n');
+    share(txt);
+  } else {
+    var p=b.getAttribute('data-bp');
+    keys.forEach(function(k){ TAGS[k]=TAGS[k]||{}; TAGS[k].p=p; });
+    saveTags(); render();
   }
-  el('selchips').addEventListener('click', function(e){
-    var c = e.target.closest('.chip'); if(!c) return;
-    var p = c.dataset.p;
-    Object.keys(picked).forEach(function(k){ savePersona(k, p==='Clear' ? '' : p); });
-    picked = {}; updateSel(); render();
-    toast(p==='Clear' ? 'Tags cleared' : 'Tagged as '+p);
-  });
+});
 
-  var pressTimer = null, pressed = false;
-  el('list').addEventListener('pointerdown', function(e){
-    var r = e.target.closest('.row'); if(!r) return;
-    pressed = false;
-    pressTimer = setTimeout(function(){ pressed = true; selecting = true; el('selbar').hidden = false; el('selbtn').textContent = 'Cancel'; picked[r.dataset.k] = true; updateSel(); render(); }, 420);
-  });
-  el('list').addEventListener('pointerup', function(e){
-    var r = e.target.closest('.row'); clearTimeout(pressTimer);
-    if(!r) return;
-    var k = r.dataset.k;
-    if(pressed){ render(); return; }
-    if(selecting){ picked[k] = !picked[k]; if(!picked[k]) delete picked[k]; updateSel(); render(); return; }
-    openSheet(k, r.dataset.n, r.dataset.p);
-  });
-  el('list').addEventListener('pointerleave', function(){ clearTimeout(pressTimer); });
+/* ---------- sheet ---------- */
+function sel(id,opts,val){
+  return '<select class="sel" id="'+id+'"><option value="">—</option>'
+    +opts.map(function(o){return '<option'+(o===val?' selected':'')+'>'+o+'</option>'}).join('')+'</select>';
+}
+var AGES=[],BGS=['A+','A-','B+','B-','O+','O-','AB+','AB-'],HTS=[];
+for(var a=18;a<=45;a++)AGES.push(String(a));
+for(var f=4;f<=5;f++)for(var i=0;i<12;i++)HTS.push(f+"'"+(i*1)+'"');
 
-  el('spersona').addEventListener('click', function(e){
-    var c = e.target.closest('.chip'); if(!c || !current) return;
-    var p = c.dataset.p;
-    var t = TAGS[current.k] || {};
-    savePersona(current.k, t.p===p ? '' : p);
-    openSheet(current.k, current.name, current.num);
-    render();
+function openSheet(c){
+  cur=c;
+  var t=TAGS[c.key]||{};
+  document.getElementById('sName').innerHTML=esc(c.name||'(no name)');
+  document.getElementById('sNum').textContent=c.phone||'';
+  document.getElementById('sBody').innerHTML=
+    '<div class="lbl">Type</div><div class="pchips" id="pchips">'
+    +PERSONAS.map(function(p){return '<button class="pc'+(t.p===p?' on':'')+'" data-p="'+p+'">'+p+'</button>'}).join('')+'</div>'
+    +'<div class="grid2"><div><div class="lbl">Age</div>'+sel('fAge',AGES,t.age)+'</div>'
+    +'<div><div class="lbl">Blood group</div>'+sel('fBg',BGS,t.bg)+'</div></div>'
+    +'<div class="grid2"><div><div class="lbl">Height</div>'+sel('fHt',HTS,t.ht)+'</div>'
+    +'<div><div class="lbl">City</div><input class="inp" id="fCity" placeholder="Type a city" value="'+esc(t.city||'')+'" autocomplete="off"></div></div>'
+    +'<div class="lbl">Note</div><input class="inp" id="fNote" placeholder="Anything useful" value="'+esc(t.note||'')+'">'
+    +'<div class="acts"><button class="btn p" id="waBtn">Share on WhatsApp</button><button class="btn o" id="cpBtn">Copy</button></div>';
+  document.getElementById('sBody').scrollTop=0;
+  document.getElementById('scrim').classList.add('on');
+  document.getElementById('sheet').classList.add('on');
+  wireSheet();
+}
+function persist(){
+  if(!cur) return;
+  var t=TAGS[cur.key]||{};
+  t.p=(document.querySelector('#pchips .pc.on')||{}).getAttribute?document.querySelector('#pchips .pc.on').getAttribute('data-p'):(t.p||'');
+  t.age=val('fAge'); t.bg=val('fBg'); t.ht=val('fHt');
+  t.city=val('fCity'); t.note=val('fNote');
+  if(t.p||t.age||t.bg||t.ht||t.city||t.note) TAGS[cur.key]=t; else delete TAGS[cur.key];
+  saveTags(); render();
+}
+function val(id){var e=document.getElementById(id);return e?e.value:''}
+function wireSheet(){
+  document.querySelectorAll('#pchips .pc').forEach(function(b){
+    b.onclick=function(){
+      var on=b.classList.contains('on');
+      document.querySelectorAll('#pchips .pc').forEach(function(x){x.classList.remove('on')});
+      if(!on) b.classList.add('on');
+      persist();
+    };
   });
-  el('fage').addEventListener('change', function(){ if(current){ saveDetail(current.k,'age',this.value); render(); } });
-  el('fbg').addEventListener('change', function(){ if(current){ saveDetail(current.k,'bg',this.value); render(); } });
-  el('fht').addEventListener('change', function(){ if(current){ saveDetail(current.k,'ht',this.value); render(); } });
-  el('fcity').addEventListener('change', function(){ if(current){ saveDetail(current.k,'city',this.value); } });
-  el('fnote').addEventListener('change', function(){ if(current){ saveDetail(current.k,'note',this.value); } });
-  el('closebtn').addEventListener('click', closeSheet);
-  el('scrim').addEventListener('click', closeSheet);
-  el('sharebtn').addEventListener('click', function(){ if(window.DB) window.DB.share(shareText()); else toast('Share'); });
-  el('copybtn').addEventListener('click', function(){
-    var t = shareText();
-    if(navigator.clipboard) navigator.clipboard.writeText(t).then(function(){ toast('Copied'); }, function(){ toast('Copy failed'); });
-    else toast(t);
-  });
-  el('callbtn').addEventListener('click', function(){ if(current && window.DB) window.DB.call(current.num); });
+  ['fAge','fBg','fHt'].forEach(function(id){var e=document.getElementById(id);if(e)e.onchange=persist});
+  var n=document.getElementById('fNote'); if(n)n.onchange=persist;
+  var ci=document.getElementById('fCity');
+  if(ci){
+    ci.oninput=function(){persist();cityShow()};
+    ci.onfocus=cityShow;
+    ci.onchange=persist;
+  }
+  document.getElementById('waBtn').onclick=function(){share(shareText())};
+  document.getElementById('cpBtn').onclick=function(){copy(shareText())};
+}
+function shareText(){
+  var t=TAGS[cur.key]||{};
+  var L=[];
+  L.push('*'+(cur.name||'')+'*');
+  if(cur.phone) L.push('Number: '+cur.phone);
+  if(t.p) L.push('Type: '+t.p);
+  if(t.age) L.push('Age: '+t.age);
+  if(t.bg) L.push('Blood group: '+t.bg);
+  if(t.ht) L.push('Height: '+t.ht);
+  if(t.city) L.push('City: '+t.city);
+  if(t.note) L.push('Note: '+t.note);
+  return L.join('\n');
+}
+function share(txt){ window.open('https://wa.me/?text='+encodeURIComponent(txt),'_blank'); }
+function copy(txt){
+  try{
+    var ta=document.createElement('textarea');
+    ta.value=txt; ta.style.position='fixed'; ta.style.opacity=0;
+    document.body.appendChild(ta); ta.select();
+    document.execCommand('copy'); document.body.removeChild(ta);
+  }catch(e){}
+}
+function closeSheet(){
+  persist();
+  document.getElementById('scrim').classList.remove('on');
+  document.getElementById('sheet').classList.remove('on');
+  document.getElementById('cityPop').classList.remove('on');
+}
+document.getElementById('sClose').onclick=closeSheet;
+document.getElementById('scrim').onclick=closeSheet;
 
-  setTimeout(boot, 60);
-})();
+/* ---------- city picker ---------- */
+function cityShow(){
+  var inp=document.getElementById('fCity'); if(!inp) return;
+  var pop=document.getElementById('cityPop');
+  var q=(inp.value||'').trim().toLowerCase();
+  var r=inp.getBoundingClientRect();
+  pop.style.top=Math.max(70,Math.min(r.bottom+6,window.innerHeight-230))+'px';
+  var hits=CITIES.filter(function(c){return !q||c.toLowerCase().indexOf(q)>=0}).slice(0,60);
+  pop.innerHTML=hits.map(function(c){return '<div>'+c+'</div>'}).join('')||'<div>No match</div>';
+  pop.classList.add('on');
+}
+document.getElementById('cityPop').addEventListener('click',function(e){
+  var d=e.target.closest('div'); if(!d) return;
+  var inp=document.getElementById('fCity');
+  if(inp && d.textContent!=='No match'){ inp.value=d.textContent; persist(); }
+  document.getElementById('cityPop').classList.remove('on');
+});
+document.addEventListener('click',function(e){
+  if(e.target.id!=='fCity' && !e.target.closest('#cityPop')) document.getElementById('cityPop').classList.remove('on');
+});
+
+/* ---------- requests ---------- */
+function openReqs(){
+  cur=null;
+  var r=inReqs();
+  document.getElementById('sName').textContent='Requests';
+  document.getElementById('sNum').textContent=r.length+' incoming';
+  document.getElementById('sBody').innerHTML= r.length
+    ? r.map(function(x){
+        return '<div class="reqrow"><div><div class="rn">'+esc(x.fromName||'Someone')+'</div>'
+          +'<div class="rs">wants '+esc(x.donorName||'a donor')+' · '+esc(x.fromNumber||'')+'</div></div>'
+          +'<span class="pend">Pending</span></div>';
+      }).join('')
+    : '<div class="empty" style="padding:24px 4px">No requests yet.<br><br>When another agent taps one of your donors in their book, the request will land here.</div>';
+  document.getElementById('scrim').classList.add('on');
+  document.getElementById('sheet').classList.add('on');
+}
+
+/* ---------- boot ---------- */
+loadTags(); loadContacts(); renderChips(); render();
 </script>
-
 </body>
 </html>
