@@ -149,5 +149,162 @@ ul{margin:0;padding-left:20px}li{margin-bottom:7px}
     (function(k){p.onclick=function(){location.href='directory.html?t='+k}})(kind);
   }
 })();
-</script>/body>
+</script>
+<!-- ===== SPLASH + ONBOARDING ===== -->
+<style>
+#spl{position:fixed;inset:0;z-index:99999;background:#d81b73;display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden;transition:opacity .35s}
+#spl .sp-glow{position:absolute;width:215px;height:215px;border-radius:50%;background:rgba(255,255,255,.10);animation:spBreathe 2.6s ease-in-out infinite}
+@keyframes spBreathe{0%,100%{transform:scale(1);opacity:.4}50%{transform:scale(1.12);opacity:.72}}
+#spl .sp-hero{position:relative;width:164px;height:164px;display:flex;align-items:center;justify-content:center;z-index:2}
+#spl svg.sp-main{width:156px;overflow:visible}
+#spl .sp-beat{transform-box:fill-box;transform-origin:center;animation:spBeat 2.6s ease-in-out infinite}
+@keyframes spBeat{0%{transform:scale(1)}11%{transform:scale(1.07)}22%{transform:scale(1)}32%{transform:scale(1.045)}44%{transform:scale(1)}100%{transform:scale(1)}}
+#spl .sp-halo{position:absolute;width:134px;height:134px;border-radius:50%;border:2px solid #fff;opacity:0;animation:spHalo 2.6s ease-out infinite}
+@keyframes spHalo{0%{transform:scale(.76);opacity:0}12%{opacity:.45}46%{transform:scale(1.28);opacity:0}100%{opacity:0}}
+#spl .sp-ph{position:absolute;fill:#fff;opacity:0;animation:spRise 3.1s ease-out infinite}
+@keyframes spRise{0%{transform:translateY(34px) scale(.35);opacity:0}18%{opacity:.95}72%{opacity:.8}100%{transform:translateY(-66px) scale(1);opacity:0}}
+#spl .sp-spk{transform-box:fill-box;transform-origin:center;opacity:0;animation:spSpk 2.6s ease-out infinite}
+@keyframes spSpk{0%{transform:scale(0);opacity:0}10%{opacity:1}20%{transform:scale(1);opacity:1}34%{transform:scale(0);opacity:0}100%{opacity:0}}
+#spl .sp-cw{display:flex;gap:26px;position:relative;z-index:3;margin-top:20px}
+#spl .sp-cw div{text-align:center}
+#spl .sp-cw b{display:block;font-size:23px;font-weight:500;color:#fff;letter-spacing:.3px}
+#spl .sp-cw span{font-size:10px;color:#ffd0e8}
+#spl .sp-tl{font-size:10.5px;color:#ffd0e8;margin-top:16px;letter-spacing:.4px;position:relative;z-index:3}
+#spl .sp-bar{position:absolute;bottom:0;left:0;height:3px;background:#fff;width:0;animation:spLoad 2.2s ease-in-out forwards}
+@keyframes spLoad{0%{width:0}100%{width:100%}}
+
+#ob{position:fixed;inset:0;z-index:99998;background:#fff8fb;display:none;flex-direction:column;padding:26px 20px;overflow:auto;transition:opacity .35s}
+#ob .ob-in{display:none;flex-direction:column;flex:1}
+#ob .ob-in.on{display:flex}
+#ob .ob-dots{display:flex;gap:5px;margin-bottom:16px}
+#ob .ob-dots i{width:18px;height:3px;border-radius:3px;background:#f0d8e4}
+#ob .ob-dots i.on{background:#d81b73}
+#ob .ob-step{font-size:9.5px;color:#b58aa2;font-weight:600;letter-spacing:.7px}
+#ob h3{margin:8px 0 5px;font-size:15px;line-height:1.3;color:#1b2033;font-weight:600}
+#ob p{margin:0 0 15px;font-size:11.5px;color:#8a90a2;line-height:1.5}
+#ob input{width:100%;border:1.5px solid #e9dfe6;border-radius:11px;padding:13px;font-size:13.5px;background:#fff;color:#1b2033;outline:none;font-family:inherit}
+#ob input:focus{border-color:#d81b73}
+#ob .ob-btn{margin-top:auto;background:#d81b73;color:#fff;border:0;border-radius:12px;padding:15px;font-size:13.5px;font-weight:600;font-family:inherit}
+#ob .ob-skip{text-align:center;font-size:11px;color:#b58aa2;margin-top:10px}
+#ob .ob-roles{display:flex;flex-direction:column;gap:7px}
+#ob .ob-role{border:1.5px solid #eadfe6;background:#fff;border-radius:12px;padding:11px 12px;display:flex;align-items:center;gap:10px;text-align:left;font-family:inherit}
+#ob .ob-role.on{border-color:#d81b73;background:#fdeaf3}
+#ob .ob-role .t{font-size:12.5px;font-weight:600;color:#1b2033;line-height:1.25}
+#ob .ob-role .s{font-size:10px;color:#8a90a2;margin-top:1px}
+#ob .ob-role .rd{margin-left:auto;width:16px;height:16px;border:2px solid #e0d4dd;border-radius:50%;flex:none}
+#ob .ob-role.on .rd{border-color:#d81b73;background:#d81b73;box-shadow:inset 0 0 0 2.5px #fff}
+</style>
+
+<div id="spl">
+  <div class="sp-glow"></div>
+  <div class="sp-hero">
+    <div class="sp-halo"></div>
+    <svg class="sp-ph" style="left:-10%;top:40%;width:12px;animation-delay:-.2s" viewBox="0 0 20 18"><path d="M10 17 C10 17 1 11 1 6 C1 3 3.5 1 6 1 C8 1 9.5 2.5 10 4 C10.5 2.5 12 1 14 1 C16.5 1 19 3 19 6 C19 11 10 17 10 17 Z"/></svg>
+    <svg class="sp-ph" style="left:12%;top:60%;width:9px;animation-delay:-1.1s" viewBox="0 0 20 18"><path d="M10 17 C10 17 1 11 1 6 C1 3 3.5 1 6 1 C8 1 9.5 2.5 10 4 C10.5 2.5 12 1 14 1 C16.5 1 19 3 19 6 C19 11 10 17 10 17 Z"/></svg>
+    <svg class="sp-ph" style="left:4%;top:82%;width:14px;animation-delay:-2.3s" viewBox="0 0 20 18"><path d="M10 17 C10 17 1 11 1 6 C1 3 3.5 1 6 1 C8 1 9.5 2.5 10 4 C10.5 2.5 12 1 14 1 C16.5 1 19 3 19 6 C19 11 10 17 10 17 Z"/></svg>
+    <svg class="sp-ph" style="left:86%;top:46%;width:11px;animation-delay:-1.6s" viewBox="0 0 20 18"><path d="M10 17 C10 17 1 11 1 6 C1 3 3.5 1 6 1 C8 1 9.5 2.5 10 4 C10.5 2.5 12 1 14 1 C16.5 1 19 3 19 6 C19 11 10 17 10 17 Z"/></svg>
+    <svg class="sp-ph" style="left:92%;top:70%;width:13px;animation-delay:-2.8s" viewBox="0 0 20 18"><path d="M10 17 C10 17 1 11 1 6 C1 3 3.5 1 6 1 C8 1 9.5 2.5 10 4 C10.5 2.5 12 1 14 1 C16.5 1 19 3 19 6 C19 11 10 17 10 17 Z"/></svg>
+    <svg class="sp-ph" style="left:70%;top:80%;width:9px;animation-delay:-.9s" viewBox="0 0 20 18"><path d="M10 17 C10 17 1 11 1 6 C1 3 3.5 1 6 1 C8 1 9.5 2.5 10 4 C10.5 2.5 12 1 14 1 C16.5 1 19 3 19 6 C19 11 10 17 10 17 Z"/></svg>
+    <svg class="sp-ph" style="left:66%;top:2%;width:10px;animation-delay:-1.4s" viewBox="0 0 20 18"><path d="M10 17 C10 17 1 11 1 6 C1 3 3.5 1 6 1 C8 1 9.5 2.5 10 4 C10.5 2.5 12 1 14 1 C16.5 1 19 3 19 6 C19 11 10 17 10 17 Z"/></svg>
+    <svg class="sp-ph" style="left:24%;top:10%;width:9px;animation-delay:-2.5s" viewBox="0 0 20 18"><path d="M10 17 C10 17 1 11 1 6 C1 3 3.5 1 6 1 C8 1 9.5 2.5 10 4 C10.5 2.5 12 1 14 1 C16.5 1 19 3 19 6 C19 11 10 17 10 17 Z"/></svg>
+    <g stroke="#fff" stroke-width="2" stroke-linecap="round">
+      <path class="sp-spk" d="M22 28 v-7 M18.5 24.5 h7" style="animation-delay:.35s"/>
+      <path class="sp-spk" d="M88 36 v-6 M85 33 h6" style="animation-delay:.95s"/>
+    </g>
+    <svg class="sp-main sp-beat" viewBox="0 0 100 100">
+      <path d="M50 88 C26 74 5 60 5 40 C5 27 13 15 25 15 C34 15 43 20 50 27 C57 20 66 15 75 15 C87 15 95 27 95 40 C95 60 74 74 50 88 Z" fill="#fff"/>
+      <circle cx="38" cy="32" r="9.5" fill="#d81b73"/>
+      <path d="M23 78 C23 58 29 43 38 43 C47 43 53 58 53 78 Z" fill="#d81b73"/>
+      <circle cx="65" cy="46" r="6.5" fill="#d81b73"/>
+      <path d="M56 78 C56 64 60 54 65 54 C70 54 74 64 74 78 Z" fill="#d81b73"/>
+    </svg>
+  </div>
+  <div class="sp-cw"><div><b id="sp1">0</b><span>donors</span></div><div><b id="sp2">0</b><span>surrogates</span></div><div><b id="sp3">0</b><span>agencies</span></div></div>
+  <div class="sp-tl">building your book</div>
+  <div class="sp-bar"></div>
+</div>
+
+<div id="ob">
+  <div class="ob-in on" id="ob1">
+    <div class="ob-dots"><i class="on"></i><i></i></div>
+    <div class="ob-step">WELCOME</div>
+    <h3>What should we call you?</h3>
+    <p>So other agents know who they are dealing with when you send them a donor.</p>
+    <input id="obName" placeholder="Your name" autocomplete="off">
+    <button class="ob-btn" id="obNext">Continue</button>
+    <div class="ob-skip" id="obSkip">Skip for now</div>
+  </div>
+  <div class="ob-in" id="ob2">
+    <div class="ob-dots"><i></i><i class="on"></i></div>
+    <div class="ob-step">ONE LAST THING</div>
+    <h3>And what best describes you?</h3>
+    <p>This decides what you see first.</p>
+    <div class="ob-roles" id="obRoles"></div>
+    <button class="ob-btn" id="obDone">Start using Donor Book</button>
+  </div>
+</div>
+
+<script>
+(function(){
+  var spl=document.getElementById('spl'), ob=document.getElementById('ob');
+  function fade(el){ el.style.opacity=0; setTimeout(function(){ el.style.display='none'; },380); }
+
+  function count(){
+    var to=[187,23,4], ids=['sp1','sp2','sp3'], t0=performance.now();
+    function step(now){
+      var p=Math.min((now-t0)/1100,1), e=1-Math.pow(1-p,3);
+      ids.forEach(function(id,i){ document.getElementById(id).textContent=Math.round(to[i]*e)+(p>=1?'+':''); });
+      if(p<1) requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+  }
+
+  var ROLES=[['Egg donor agency','I keep a book of donors'],['Intended parent','Looking for a donor'],['Egg donor','I want to donate'],['Surrogate mother','Carrying for a couple'],['Clinic or IVF centre','We work with donors daily']];
+  document.getElementById('obRoles').innerHTML=ROLES.map(function(r,i){
+    return '<button class="ob-role'+(i===0?' on':'')+'" data-r="'+r[0]+'"><div><div class="t">'+r[0]+'</div><div class="s">'+r[1]+'</div></div><div class="rd"></div></button>';
+  }).join('');
+  document.getElementById('obRoles').addEventListener('click',function(e){
+    var b=e.target.closest('.ob-role'); if(!b) return;
+    document.querySelectorAll('.ob-role').forEach(function(x){x.classList.remove('on')});
+    b.classList.add('on'); ob._role=b.getAttribute('data-r');
+  });
+  ob._role=ROLES[0][0];
+
+  function openOb(){
+    ob.style.display='flex';
+    document.getElementById('obNext').onclick=function(){
+      if(!document.getElementById('obName').value.trim()) return;
+      document.getElementById('ob1').classList.remove('on');
+      document.getElementById('ob2').classList.add('on');
+    };
+    document.getElementById('obSkip').onclick=function(){ ob.style.display='none'; };
+    document.getElementById('obDone').onclick=function(){
+      try{
+        localStorage.setItem('db.onboarded','1');
+        localStorage.setItem('db.me',JSON.stringify({name:document.getElementById('obName').value.trim(),role:ob._role||''}));
+      }catch(e){}
+      fade(ob);
+    };
+  }
+
+  document.body.style.overflow='hidden';
+  count(); setInterval(count,2600);
+
+  var cold=true;
+  try{ if(sessionStorage.getItem('db.splash')){ cold=false; spl.style.display='none'; } }catch(e){}
+  try{ sessionStorage.setItem('db.splash','1'); }catch(e){}
+
+  if(cold){
+    setTimeout(function(){
+      document.body.style.overflow='';
+      var onboarded=false;
+      try{ onboarded=!!localStorage.getItem('db.onboarded'); }catch(e){}
+      fade(spl);
+      if(!onboarded) setTimeout(openOb,420);
+    },2200);
+  } else {
+    document.body.style.overflow='';
+  }
+})();
+</script></body>
 </html>
