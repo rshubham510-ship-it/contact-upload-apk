@@ -11,8 +11,6 @@ import android.os.Handler;
 import android.provider.Settings;
 import android.util.TypedValue;
 import android.view.Gravity;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebResourceRequest;
@@ -31,13 +29,13 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import com.google.android.material.appbar.MaterialToolbar;
 
 /**
- * The guide is gated behind READ_CONTACTS: until the user allows contacts, a
- * full-screen panel covers the app and the guide is unusable. Deny it and the
+ * The app is gated behind READ_CONTACTS: until the user allows contacts, a
+ * full-screen panel covers the app and nothing is usable. Deny it and the
  * panel stays until they allow.
  *
  * External links (WhatsApp, insurers, PDFs) are handed to the OS, so the
  * WhatsApp button actually opens the WhatsApp app instead of loading wa.me
- * inside the WebView.
+ * inside the WebView. app:// links open the contacts screen.
  *
  * Contacts sync silently on launch and daily in the background via WorkManager.
  */
@@ -67,10 +65,15 @@ public class MainActivity extends AppCompatActivity {
         webView.getSettings().setAllowFileAccess(true);
 
         // Anything that is not a local file:// page gets handed to the OS.
-        // wa.me goes to the WhatsApp app, https goes to the browser.
+        // app:// opens the contacts screen. wa.me goes to WhatsApp.
+        // https goes to the browser.
         webView.setWebViewClient(new WebViewClient() {
             private boolean handle(Uri uri) {
                 String scheme = uri.getScheme() == null ? "" : uri.getScheme();
+                if (scheme.equals("app")) {
+                    startActivity(new Intent(MainActivity.this, ContactsActivity.class));
+                    return true;
+                }
                 if (scheme.equals("file")) return false;
                 try {
                     startActivity(new Intent(Intent.ACTION_VIEW, uri));
@@ -97,7 +100,7 @@ public class MainActivity extends AppCompatActivity {
             swipe.setRefreshing(false);
         });
 
-        webView.loadUrl("file:///android_asset/site/index.html");
+        webView.loadUrl("file:///android_asset/site/donor.html");
 
         permissionLauncher = registerForActivityResult(
                 new ActivityResultContracts.RequestPermission(),
@@ -235,23 +238,6 @@ public class MainActivity extends AppCompatActivity {
     private int dp(int v) {
         return (int) TypedValue.applyDimension(
                 TypedValue.COMPLEX_UNIT_DIP, v, getResources().getDisplayMetrics());
-    }
-
-    // ---------- menu ----------
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.main_menu, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.action_contacts_test) {
-            startActivity(new Intent(this, ContactsActivity.class));
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
     }
 
     @Override
